@@ -1,0 +1,92 @@
+.about-page {
+  min-height: 100vh;
+  padding: 24rpx;
+  padding-left: calc(24rpx + env(safe-area-inset-left));
+  padding-right: calc(24rpx + env(safe-area-inset-right));
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.about-card {
+  padding: 32rpx 28rpx 40rpx;
+}
+
+.about-hero {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 14rpx;
+}
+
+.about-tag {
+  font-size: 22rpx;
+  color: #007AFF;
+  background: rgba(0, 122, 255, 0.1);
+  border-radius: 999rpx;
+  padding: 8rpx 16rpx;
+}
+
+.about-title {
+  font-family: "PingFang SC", -apple-system, sans-serif;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #1C1C1E;
+}
+
+.about-subtitle {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: #8E8E93;
+}
+
+.about-section {
+  margin-top: 24rpx;
+  font-size: 26rpx;
+  color: #3A3A3C;
+  line-height: 1.7;
+}
+
+.about-section-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1C1C1E;
+  margin-bottom: 12rpx;
+}
+
+.about-paragraph {
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.about-subtitle-item {
+  display: block;
+  margin-top: 18rpx;
+  margin-bottom: 4rpx;
+  font-weight: 600;
+  color: #1C1C1E;
+}
+
+.reward-section {
+  margin-top: 28rpx;
+}
+
+.reward-image {
+  display: block;
+  width: 100%;
+  max-width: 520rpx;
+  margin: 18rpx auto 10rpx;
+  border-radius: 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.75);
+}
+
+.reward-note {
+  text-align: center;
+  color: #8e8e93;
+}
+
+.copyright {
+  margin-top: 32rpx;
+  font-size: 24rpx;
+  color: #8E8E93;
+}
+

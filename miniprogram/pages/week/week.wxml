@@ -1,0 +1,86 @@
+<!-- 周视图 -->
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+  <view class="week-header glass-card ios-enter">
+    <text class="nav-arrow" bindtap="prevWeek">‹</text>
+    <text class="week-title">{{ weekRangeText }}</text>
+    <text class="nav-arrow" bindtap="nextWeek">›</text>
+  </view>
+  <view class="top-actions ios-enter ios-enter-delay-1">
+    <view class="glass-btn share-entry" bindtap="onOpenShareModal">分享</view>
+  </view>
+  <view class="boss-view-bar glass-card ios-enter ios-enter-delay-1" wx:if="{{ isBoss }}" bindtap="onBossSwitchTeacher">
+    <view class="boss-view-head">
+      <text class="boss-view-title">{{ bossViewingLine }}</text>
+      <text class="boss-view-badge {{ bossViewModeClass }}">{{ bossViewModeText }}</text>
+    </view>
+    <text class="boss-view-hint text-caption">{{ bossViewingHint }}</text>
+  </view>
+
+  <scroll-view scroll-y class="week-scroll ios-enter ios-enter-delay-2">
+    <view class="week-list">
+      <block wx:for="{{ weekDays }}" wx:key="date">
+        <view class="day-block glass-card">
+          <view class="day-head" data-date="{{ item.date }}" bindtap="onDayTap">
+            <view class="day-label {{ item.isToday ? 'today' : '' }}">{{ item.weekday }}  {{ item.dateShort }}</view>
+            <view class="day-entry">排课 ›</view>
+          </view>
+          <view class="course-list" wx:if="{{ item.courses.length > 0 }}">
+            <view
+              class="course-card"
+              wx:for="{{ item.courses }}"
+              wx:for-item="c"
+              wx:key="id"
+              style="--accent: {{ c.studentColor || '#A8C5C0' }}"
+              data-id="{{ c.id }}"
+              data-date="{{ c.date }}"
+              catchtap="onCourseTap"
+            >
+              <view class="course-color-bar"></view>
+              <view class="course-body">
+                <text class="course-time">{{ c.startTime }} - {{ c.endTime }}</text>
+                <text class="course-name">{{ c.studentName }}</text>
+              </view>
+              <text class="course-dur">{{ c.duration }}min</text>
+            </view>
+          </view>
+          <view class="no-class text-caption" wx:else data-date="{{ item.date }}" bindtap="onDayTap">暂无课程，点击排课</view>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+
+  <!-- Tab bar -->
+  <view class="ios-tabbar ios-enter ios-enter-delay-4">
+    <view class="ios-tab-item" bindtap="goMonth">
+      <text class="ios-tab-label">月视图</text>
+    </view>
+    <view class="ios-tab-item active">
+      <text class="ios-tab-label">周视图</text>
+    </view>
+    <view class="ios-tab-item" bindtap="goStats">
+      <text class="ios-tab-label">统计</text>
+    </view>
+    <view class="ios-tab-item" bindtap="goSettings">
+      <text class="ios-tab-label">个人</text>
+    </view>
+  </view>
+
+  <!-- Share sheet -->
+  <view class="sheet-mask" wx:if="{{ showShareModal }}" bindtap="onCloseShareModal">
+    <view class="sheet-panel" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">分享课表</view>
+      <view class="sheet-hint">可分享图片或文本，复制后可发给家长</view>
+      <view class="glass-btn sheet-btn" bindtap="onShareWeekImage">本周课表图</view>
+      <view class="glass-btn sheet-btn" bindtap="onShareTodayImage">今日课表图</view>
+      <picker mode="date" bindchange="onShareDayPick">
+        <view class="glass-btn sheet-btn">选择日期生成课表图</view>
+      </picker>
+      <view class="glass-btn sheet-btn" bindtap="onCopyShareText">复制本周分享文本</view>
+      <view class="glass-btn sheet-btn cancel" bindtap="onCloseShareModal">关闭</view>
+    </view>
+  </view>
+  </view>
+</view>

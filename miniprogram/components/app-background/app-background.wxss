@@ -1,0 +1,59 @@
+.app-bg {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.app-bg__img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-bg__fallback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(165deg, #e8ecf4 0%, #d5dae6 40%, #e3e7f1 100%);
+}
+
+.app-bg__veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: background 0.35s ease;
+}
+
+.app-bg__veil--light {
+  background: linear-gradient(
+    165deg,
+    rgba(232, 236, 244, 0.78) 0%,
+    rgba(213, 218, 230, 0.68) 45%,
+    rgba(227, 231, 241, 0.74) 100%
+  );
+}
+
+.app-bg__veil--dark {
+  background: linear-gradient(
+    165deg,
+    rgba(22, 26, 38, 0.52) 0%,
+    rgba(18, 22, 32, 0.48) 50%,
+    rgba(26, 30, 42, 0.55) 100%
+  );
+}
+
+.app-bg__canvas {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  left: -9999px;
+  top: 0;
+  opacity: 0;
+}

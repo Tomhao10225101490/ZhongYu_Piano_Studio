@@ -1,0 +1,11 @@
+<!-- iOS 风格弹窗：用 hidden 保持节点稳定，避免 glass-easel FLOW 报错 -->
+<view class="ios-modal-mask" hidden="{{ !show }}" catchtap="onMaskTap">
+  <view class="ios-modal-box" catchtap="preventClose">
+    <view class="ios-modal-title">{{ title }}</view>
+    <view class="ios-modal-content">{{ content }}</view>
+    <view class="ios-modal-actions">
+      <view class="ios-modal-btn cancel" hidden="{{ !showCancel }}" bindtap="onCancel">{{ cancelText }}</view>
+      <view class="ios-modal-btn confirm {{ showCancel ? '' : 'full' }}" bindtap="onConfirm">{{ confirmText }}</view>
+    </view>
+  </view>
+</view>

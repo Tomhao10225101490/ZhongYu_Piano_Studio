@@ -1,0 +1,204 @@
+<!-- 统计：本周/本月汇总 + 课时费明细卡片列表，点击跳转当日排课 -->
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+  <view class="stats-hero glass-card ios-enter">
+    <view class="stats-hero-head">
+      <view class="ios-section-title">统计概览</view>
+      <view class="glass-btn share-entry" bindtap="onOpenShareModal">分享</view>
+    </view>
+    <view class="ios-section-subtitle">按 45 分钟单价折算，明细可点击跳转</view>
+    <view class="anchor-row">
+      <picker mode="date" value="{{ anchorDate }}" bindchange="onAnchorDatePick">
+        <view class="anchor-picker glass-btn">
+          统计基准日：{{ anchorDateText }}
+        </view>
+      </picker>
+      <view class="anchor-reset glass-btn" wx:if="{{ !isTodayAnchor }}" bindtap="onResetAnchorToday">回到今天</view>
+    </view>
+    <view class="quick-switch-row">
+      <view class="quick-switch-btn glass-btn" bindtap="onQuickPrev">{{ quickPrevText }}</view>
+      <view class="quick-switch-btn glass-btn" bindtap="onQuickNext">{{ quickNextText }}</view>
+    </view>
+  </view>
+  <view class="boss-view-bar glass-card ios-enter ios-enter-delay-1" wx:if="{{ isBoss }}" bindtap="onBossSwitchTeacher">
+    <view class="boss-view-head">
+      <text class="boss-view-title">{{ bossViewingLine }}</text>
+      <text class="boss-view-badge {{ bossViewModeClass }}">{{ bossViewModeText }}</text>
+    </view>
+    <text class="boss-view-hint text-caption">{{ bossViewingHint }}</text>
+  </view>
+  <view class="period-grid ios-enter ios-enter-delay-1">
+    <view
+      class="period-card glass-card {{ activePeriod === item.key ? 'period-card--active' : '' }}"
+      wx:for="{{ periodCards }}"
+      wx:key="key"
+      data-key="{{ item.key }}"
+      bindtap="onPeriodCardTap"
+    >
+      <text class="period-title">{{ item.title }}</text>
+      <text class="period-subtitle text-caption">{{ item.subtitle }}</text>
+      <text class="period-total">¥ {{ item.totalFee }}</text>
+      <text class="period-mini text-caption">{{ item.count }} 节 · 老板 ¥{{ item.bossFee }}</text>
+    </view>
+  </view>
+
+  <view class="card glass-card ios-enter ios-enter-delay-2">
+    <view class="card-title">{{ currentTitle }}统计详情</view>
+    <view class="card-subtitle text-caption">{{ currentSubtitle }}</view>
+    <view class="stat-row">
+      <text class="label">上课节数</text>
+      <text class="value">{{ currentCount }} 节</text>
+    </view>
+    <view class="stat-row">
+      <text class="label">课时费（{{ pricePerClass }}元/45分钟）</text>
+      <text class="value highlight">¥ {{ currentFee }}</text>
+    </view>
+    <view class="stat-row">
+      <text class="label">老板所得（按学生分成）</text>
+      <text class="value boss-value">¥ {{ currentBossFee }}</text>
+    </view>
+    <view class="stat-row">
+      <text class="label">教师所得（按学生分成）</text>
+      <text class="value teacher-value">¥ {{ currentTeacherFee }}</text>
+    </view>
+    <view class="student-count-list">
+      <view class="detail-section-title">{{ currentStudentCountTitle }}</view>
+      <view class="student-count-empty text-caption" wx:if="{{ currentStudentCountList.length === 0 }}">该周期暂无上课学生</view>
+      <view class="student-count-grid" wx:else>
+        <view
+          class="student-count-item glass-card"
+          wx:for="{{ currentStudentCountList }}"
+          wx:key="name"
+          data-name="{{ item.name }}"
+          bindtap="onStudentCountTap"
+        >
+          <view class="student-count-left">
+            <view class="student-count-dot" style="background: {{ item.color || '#A8C5C0' }}"></view>
+            <text class="student-count-name">{{ item.name }}</text>
+          </view>
+          <text class="student-count-num">{{ item.count }} 节</text>
+        </view>
+      </view>
+    </view>
+    <view class="detail-list" wx:if="{{ currentDetailList.length > 0 }}">
+      <view class="detail-section-title">明细</view>
+      <view
+        class="detail-card glass-card"
+        wx:for="{{ currentDetailList }}"
+        wx:key="id"
+        style="border-left-color: {{ item.studentColor || '#A8C5C0' }}"
+        data-date="{{ item.date }}"
+        bindtap="goToDay"
+      >
+        <view class="detail-main">
+          <text class="detail-date">{{ item.dateDisplay }}</text>
+          <text class="detail-time">{{ item.startTime }}</text>
+          <text class="detail-name">{{ item.studentName }}</text>
+          <text class="detail-share text-caption">{{ item.sharePercentDisplay }}</text>
+        </view>
+        <view class="detail-fee">
+          <text class="detail-fee-boss">老板 ¥ {{ item.bossFeeDisplay }}</text>
+          <text class="detail-fee-teacher">教师 ¥ {{ item.teacherFeeDisplay }}</text>
+        </view>
+      </view>
+    </view>
+    <view class="detail-empty text-caption" wx:else>该周期暂无课程</view>
+  </view>
+
+  <view class="hint text-caption ios-enter ios-enter-delay-3">
+    按每节课实际时长折算；明细可进当日排课。老板/教师分成优先用学生专属比例，未设置时使用全局默认（老板 {{ defaultBossSharePercent }}% / 教师 {{ defaultTeacherSharePercent }}%）。
+  </view>
+
+  <view class="year-summary glass-card ios-enter ios-enter-delay-4">
+    <view class="year-summary-head">
+      <view class="year-summary-titles">
+        <view class="card-title year-summary-title">年度汇总</view>
+        <text class="text-caption year-summary-sub">固定支出（房租等）只从老板所得扣减；教师分成不扣工作室成本。下方「全年结余」= 课费合计 − 固定支出。</text>
+      </view>
+      <view class="year-summary-actions">
+        <view class="glass-btn year-share-btn" bindtap="onOpenYearShareModal">分享</view>
+        <picker mode="date" fields="year" value="{{ summaryYearPickerValue }}" bindchange="onSummaryYearPick">
+          <view class="glass-btn year-picker-btn">{{ summaryYear }} 年 ›</view>
+        </picker>
+      </view>
+    </view>
+    <view class="year-summary-row">
+      <text class="label">上课节数</text>
+      <text class="value">{{ yearStatCount }} 节</text>
+    </view>
+    <view class="year-summary-row">
+      <text class="label">课时费合计</text>
+      <text class="value highlight">¥ {{ yearTotalFee }}</text>
+    </view>
+    <view class="year-summary-row">
+      <text class="label">老板所得</text>
+      <text class="value boss-value">¥ {{ yearBossFee }}</text>
+    </view>
+    <view class="year-summary-row">
+      <text class="label">教师所得</text>
+      <text class="value teacher-value">¥ {{ yearTeacherFee }}</text>
+    </view>
+    <view class="year-summary-row year-summary-row--expense">
+      <text class="label">工作室支出（本年度）</text>
+      <text class="value expense-value">¥ {{ yearStudioExpense }}</text>
+    </view>
+    <view class="year-summary-divider"></view>
+    <view class="year-summary-row">
+      <text class="label">全年结余（课费合计 − 固定支出）</text>
+      <text class="value net-value">¥ {{ yearNetRevenue }}</text>
+    </view>
+    <view class="year-summary-row">
+      <text class="label">老板净得（老板所得 − 固定支出）</text>
+      <text class="value net-value net-boss">¥ {{ yearNetBoss }}</text>
+    </view>
+    <text class="year-summary-footnote text-caption">教师所得即为教师实得分成，不参与扣减工作室固定支出。</text>
+    <view class="glass-btn year-manage-btn" bindtap="goStudioExpenses">管理工作室支出</view>
+  </view>
+
+  <view class="ios-tabbar ios-enter ios-enter-delay-4">
+    <view class="ios-tab-item" bindtap="goMonth">
+      <text class="ios-tab-label">月视图</text>
+    </view>
+    <view class="ios-tab-item" bindtap="goWeek">
+      <text class="ios-tab-label">周视图</text>
+    </view>
+    <view class="ios-tab-item active">
+      <text class="ios-tab-label">统计</text>
+    </view>
+    <view class="ios-tab-item" bindtap="goSettings">
+      <text class="ios-tab-label">个人</text>
+    </view>
+  </view>
+
+  <view class="sheet-mask" wx:if="{{ showShareModal }}" bindtap="onCloseShareModal">
+    <view class="sheet-panel" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">分享费用统计</view>
+      <view class="sheet-hint">文本可复制；图片可保存到相册后发给家长</view>
+      <view class="sheet-section-label">本周</view>
+      <view class="glass-btn sheet-btn" bindtap="onCopyWeekFeeShare">复制本周费用统计（文本）</view>
+      <view class="glass-btn sheet-btn" bindtap="onShareWeekFeeImage">本周费用统计图</view>
+      <view class="sheet-section-label">按日</view>
+      <picker mode="date" bindchange="onShareDayFeeImagePick">
+        <view class="glass-btn sheet-btn">选择日期生成费用统计图</view>
+      </picker>
+      <view class="sheet-section-label">本月</view>
+      <view class="glass-btn sheet-btn" bindtap="onCopyMonthFeeShare">复制本月费用统计（文本）</view>
+      <view class="glass-btn sheet-btn" bindtap="onShareMonthFeeImage">本月费用统计图</view>
+      <view class="glass-btn sheet-btn cancel" bindtap="onCloseShareModal">关闭</view>
+    </view>
+  </view>
+
+  <view class="sheet-mask" wx:if="{{ showYearShareModal }}" bindtap="onCloseYearShareModal">
+    <view class="sheet-panel" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">分享年度汇总</view>
+      <view class="sheet-hint">可复制文字，或生成图片后直接转发给微信好友</view>
+      <view class="glass-btn sheet-btn" bindtap="onCopyYearSummaryText">复制年度汇总（文字）</view>
+      <view class="glass-btn sheet-btn" bindtap="onShareYearSummaryImage">生成年度汇总图</view>
+      <view class="glass-btn sheet-btn cancel" bindtap="onCloseYearShareModal">关闭</view>
+    </view>
+  </view>
+  </view>
+</view>

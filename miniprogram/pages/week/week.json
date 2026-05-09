@@ -1,0 +1,6 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "周视图",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

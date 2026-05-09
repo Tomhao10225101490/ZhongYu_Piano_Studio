@@ -1,0 +1,16 @@
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+  <view class="card glass-card">
+    <view class="section-title">数据备份</view>
+    <view class="hint text-caption">导出、云备份、恢复都在这里完成</view>
+    <view class="hint text-caption">服务器：{{ backupServerUrl }}</view>
+    <view class="glass-btn backup-btn" bindtap="onBackup">导出数据</view>
+    <view class="glass-btn copy-btn" wx:if="{{ backupText }}" bindtap="onCopyBackup">复制备份数据</view>
+    <view class="glass-btn glass-btn-primary backup-btn" bindtap="onBackupToServer">备份到服务器</view>
+    <view class="glass-btn backup-btn" bindtap="onRestoreLatestBackup">从服务器恢复最新备份</view>
+    <view class="glass-btn glass-btn-danger backup-btn" bindtap="onUndoLastRestore">撤销上次恢复</view>
+    <view class="hint text-caption" wx:if="{{ undoHint }}">{{ undoHint }}</view>
+  </view>
+  </view>
+</view>

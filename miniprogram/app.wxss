@@ -1,0 +1,402 @@
+/**
+ * iOS 26 Liquid Glass Design System
+ * PingFang SC + SF rounded tokens
+ */
+
+page {
+  height: 100%;
+  background: transparent;
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Helvetica Neue", sans-serif;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #1C1C1E;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root {
+  --motion-fast: 160ms;
+  --motion-mid: 220ms;
+  --motion-slow: 320ms;
+  --ease-ios-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 自定义背景组件之上 */
+.page-wrap,
+.about-page {
+  position: relative;
+  z-index: 1;
+}
+
+.page-root {
+  position: relative;
+  min-height: 100%;
+}
+
+/* ---- Typography ---- */
+.text-title {
+  font-weight: 700;
+  font-size: 34rpx;
+  color: #1C1C1E;
+  letter-spacing: 0.02em;
+}
+.text-body {
+  font-weight: 500;
+  font-size: 28rpx;
+  color: #3A3A3C;
+}
+.text-caption {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #8E8E93;
+}
+
+/* ---- Liquid Glass Card ---- */
+.glass-card {
+  box-sizing: border-box;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-radius: 28rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.75);
+  box-shadow:
+    0 2rpx 4rpx rgba(0, 0, 0, 0.02),
+    0 8rpx 32rpx rgba(0, 0, 0, 0.06),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+}
+
+/* ---- Section titles ---- */
+.ios-section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1C1C1E;
+  letter-spacing: 0.02em;
+  margin-bottom: 14rpx;
+}
+.ios-section-subtitle {
+  font-size: 24rpx;
+  color: #8E8E93;
+  margin-bottom: 16rpx;
+}
+
+/* ---- Bottom Tab Bar (Liquid Glass) ---- */
+.ios-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  padding: 0 24rpx;
+  padding-bottom: calc(12rpx + env(safe-area-inset-bottom));
+  padding-top: 12rpx;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: saturate(180%) blur(22px);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+  border-top: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 -2rpx 16rpx rgba(0, 0, 0, 0.04);
+  z-index: 50;
+}
+.ios-tab-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18rpx 0;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #8E8E93;
+  border-radius: 16rpx;
+  transition: color var(--motion-fast) ease, background var(--motion-fast) ease, transform var(--motion-fast) ease;
+}
+.ios-tab-item.active {
+  color: #007AFF;
+  font-weight: 700;
+  background: rgba(0, 122, 255, 0.08);
+}
+.ios-tab-label {
+  font-size: 24rpx;
+  line-height: 1;
+}
+
+/* ---- Glass Button ---- */
+.glass-btn {
+  box-sizing: border-box;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: saturate(160%) blur(16px);
+  -webkit-backdrop-filter: saturate(160%) blur(16px);
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.7);
+  color: #007AFF;
+  font-weight: 600;
+  font-size: 28rpx;
+  letter-spacing: 0.02em;
+  padding: 22rpx 32rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  transition: transform var(--motion-fast) var(--ease-ios-out), opacity var(--motion-fast) ease;
+}
+.glass-btn:active {
+  transform: scale(0.97);
+  opacity: 0.88;
+}
+
+.glass-btn-primary {
+  background: linear-gradient(135deg, #007AFF 0%, #0055D4 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4rpx 20rpx rgba(0, 122, 255, 0.3);
+}
+.glass-btn-primary:active {
+  background: linear-gradient(135deg, #0066E0 0%, #004BC2 100%);
+  transform: scale(0.97);
+}
+
+.glass-btn-danger {
+  color: #FF3B30;
+}
+
+/* ---- Input ---- */
+.glass-input {
+  font-family: "PingFang SC", -apple-system, sans-serif;
+  font-weight: 500;
+}
+
+/* ---- Bottom Sheet Overlay (Liquid Glass) ---- */
+.sheet-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-end;
+}
+.sheet-panel {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-radius: 32rpx 32rpx 0 0;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.85);
+  padding: 28rpx 28rpx calc(28rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 32rpx rgba(0, 0, 0, 0.08);
+}
+.sheet-handle {
+  width: 64rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 0 auto 20rpx;
+}
+.sheet-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1C1C1E;
+  margin-bottom: 6rpx;
+}
+.sheet-hint {
+  font-size: 24rpx;
+  color: #8E8E93;
+  margin-bottom: 16rpx;
+}
+.sheet-btn {
+  margin-top: 12rpx;
+  text-align: center;
+}
+.sheet-btn.cancel {
+  color: #8E8E93;
+}
+
+/* ---- Center Modal (Liquid Glass) ---- */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32rpx;
+}
+.modal-card {
+  width: 100%;
+  max-width: 620rpx;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-radius: 28rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.85);
+  padding: 32rpx;
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.1);
+}
+.modal-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1C1C1E;
+  margin-bottom: 16rpx;
+}
+.modal-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+.modal-actions .glass-btn {
+  flex: 1;
+  text-align: center;
+}
+
+/* ---- iOS Motion System ---- */
+@keyframes iosFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(22rpx) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes iosFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes iosSheetUp {
+  from {
+    opacity: 0;
+    transform: translateY(44rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes iosPulseActive {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.975); }
+  100% { transform: scale(1); }
+}
+
+.ios-enter {
+  animation: iosFadeInUp 380ms var(--ease-ios-out) both;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.ios-enter-delay-1 { animation-delay: 60ms; }
+.ios-enter-delay-2 { animation-delay: 120ms; }
+.ios-enter-delay-3 { animation-delay: 180ms; }
+.ios-enter-delay-4 { animation-delay: 240ms; }
+
+.sheet-mask {
+  animation: iosFadeIn 220ms ease both;
+}
+
+.sheet-panel {
+  animation: iosSheetUp var(--motion-slow) var(--ease-ios-out) both;
+}
+
+.modal-mask {
+  animation: iosFadeIn 180ms ease both;
+}
+
+.modal-card {
+  animation: iosFadeInUp 260ms var(--ease-ios-out) both;
+}
+
+.ios-tab-item:active {
+  animation: iosPulseActive 180ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ios-enter,
+  .sheet-mask,
+  .sheet-panel,
+  .modal-mask,
+  .modal-card,
+  .ios-tab-item:active {
+    animation: none !important;
+  }
+
+  .glass-btn,
+  .ios-tab-item,
+  .menu-item,
+  .day-cell,
+  .course-card,
+  .detail-card {
+    transition: none !important;
+  }
+}
+
+/* Safe area */
+.safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ---- Boss Theme ---- */
+.boss-ui .glass-card {
+  background: rgba(255, 245, 220, 0.62);
+  border: 1rpx solid rgba(255, 210, 120, 0.75);
+}
+.boss-ui .glass-btn {
+  color: #C9A227;
+}
+.boss-ui .glass-btn-primary {
+  background: linear-gradient(135deg, #F6D365 0%, #C9A227 100%);
+  box-shadow: 0 4rpx 20rpx rgba(201, 162, 39, 0.28);
+}
+.boss-ui .glass-btn-primary:active {
+  background: linear-gradient(135deg, #F1C84B 0%, #B68F1E 100%);
+}
+.boss-ui .ios-tab-item.active {
+  color: #C9A227;
+  background: rgba(201, 162, 39, 0.08);
+}
+.boss-ui .text-caption {
+  color: rgba(185, 154, 70, 0.95);
+}
+
+.boss-view-bar {
+  margin-bottom: 12rpx;
+  padding: 16rpx 18rpx;
+}
+.boss-view-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #A17508;
+  margin-bottom: 4rpx;
+}
+.boss-view-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+.boss-view-badge {
+  flex-shrink: 0;
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+.boss-badge--readonly {
+  color: #B54708;
+  background: rgba(255, 196, 112, 0.28);
+  border: 1rpx solid rgba(181, 71, 8, 0.22);
+}
+.boss-badge--edit {
+  color: #0A7A3D;
+  background: rgba(52, 199, 89, 0.18);
+  border: 1rpx solid rgba(10, 122, 61, 0.2);
+}
+.boss-view-hint {
+  display: block;
+}

@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "app-background": "/components/app-background/app-background"
+  },
+  "navigationBarTitleText": "老板认证",
+  "navigationBarTextStyle": "black"
+}

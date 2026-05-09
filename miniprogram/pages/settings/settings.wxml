@@ -1,0 +1,127 @@
+<!-- 个人页 -->
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+  <!-- 个人信息卡片 -->
+  <view class="profile-card glass-card ios-enter">
+    <view class="profile-center">
+      <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image class="avatar-img" wx:if="{{ profileAvatarUrl }}" src="{{ profileAvatarUrl }}" mode="aspectFill" />
+        <view class="avatar-placeholder" wx:else>
+          <text class="avatar-icon">?</text>
+        </view>
+      </button>
+      <view class="name-row" bindtap="onOpenNickModal">
+        <text class="profile-name {{ isBoss ? 'profile-name-boss-gold' : '' }}">{{ profileNickName || '未设置昵称' }}</text>
+        <text class="name-edit-icon">></text>
+      </view>
+    </view>
+    <view class="profile-hints" wx:if="{{ isBoss }}">
+      <text class="text-caption" style="color:#007AFF">已通过老板认证（老板模式仅查看）</text>
+    </view>
+    <view class="profile-hints" wx:if="{{ !isLoggedIn && userOpenid }}">
+      <text class="text-caption" style="color:#FF9500">登录态过期，请重新登录</text>
+    </view>
+    <view class="auth-actions">
+      <view class="glass-btn glass-btn-primary auth-btn" bindtap="onLoginForBackup">{{ isLoggedIn ? '刷新登录' : '登录账号' }}</view>
+      <view class="glass-btn glass-btn-danger auth-btn" bindtap="onLogoutForBackup">退出</view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-card glass-card ios-enter ios-enter-delay-2">
+    <view class="menu-item" bindtap="onOpenPreferences">
+      <text class="menu-text">设置</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="onOpenAccountDetail">
+      <text class="menu-text">账户详情</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="onOpenYearSummary">
+      <text class="menu-text">年度汇总</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="onOpenBackupCenter">
+      <text class="menu-text">数据备份</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="onShowAbout">
+      <text class="menu-text">关于我们</text>
+      <text class="menu-arrow">></text>
+    </view>
+  </view>
+
+  <!-- Tab bar -->
+  <view class="ios-tabbar ios-enter ios-enter-delay-4">
+    <view class="ios-tab-item" bindtap="goMonth">
+      <text class="ios-tab-label">月视图</text>
+    </view>
+    <view class="ios-tab-item" bindtap="goWeek">
+      <text class="ios-tab-label">周视图</text>
+    </view>
+    <view class="ios-tab-item" bindtap="goStats">
+      <text class="ios-tab-label">统计</text>
+    </view>
+    <view class="ios-tab-item active">
+      <text class="ios-tab-label">个人</text>
+    </view>
+  </view>
+
+  <!-- 昵称弹窗 -->
+  <view class="modal-mask" wx:if="{{ showNickModal }}" bindtap="onCloseNickModal">
+    <view class="modal-card" catchtap="noop">
+      <view class="modal-title">修改昵称</view>
+      <view class="nick-input-wrap">
+        <input
+          class="nick-input"
+          type="text"
+          placeholder="输入你的昵称"
+          placeholder-class="nick-placeholder"
+          value="{{ nickDraft }}"
+          bindinput="onNickDraftInput"
+        />
+      </view>
+      <view class="modal-actions">
+        <view class="glass-btn" bindtap="onCloseNickModal">取消</view>
+        <view class="glass-btn glass-btn-primary" bindtap="onConfirmNickModal">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="modal-mask" wx:if="{{ showAccountDetailModal }}" bindtap="onCloseAccountDetail">
+    <view class="modal-card" catchtap="noop">
+      <view class="modal-title">账户详情</view>
+      <view class="detail-list">
+        <view class="detail-row">
+          <text class="detail-label">账号ID</text>
+          <text class="detail-value">{{ profileIdText }}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">资料更新时间</text>
+          <text class="detail-value">{{ accountDetailUpdatedAtText }}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">数据归属</text>
+          <text class="detail-value">{{ userScopeLabel }}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">登录状态</text>
+          <text class="detail-value">{{ isLoggedIn ? '已登录' : '未登录/已过期' }}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">老板认证</text>
+          <text class="detail-value">{{ accountDetailBossText }}</text>
+        </view>
+      </view>
+      <view class="modal-actions">
+        <view class="glass-btn glass-btn-primary" bindtap="onCloseAccountDetail">知道了</view>
+      </view>
+    </view>
+  </view>
+  </view>
+</view>

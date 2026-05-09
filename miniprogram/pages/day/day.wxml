@@ -1,0 +1,74 @@
+<!-- 某日排课：长按选课后点另一门课互换；自动顺延在编辑页保存时触发 -->
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap {{ swapSourceId ? 'page-wrap--swap-pick' : '' }}">
+  <view class="day-header glass-card">
+    <text class="day-title">{{ dateDisplay }}</text>
+    <text class="weekday-text">{{ weekdayText }}</text>
+  </view>
+  <view class="day-subtitle text-caption">时间顺序展示当日课程；长按一门课选中，再点另一门课可互换上课时间</view>
+
+  <scroll-view
+    class="day-scroll"
+    scroll-y="{{true}}"
+    scroll-with-animation="{{ false }}"
+  >
+    <view class="course-list" wx:if="{{ courses.length > 0 }}">
+      <view
+        class="course-card glass-card {{ swapSourceId === item.id ? 'course-card--swap-selected' : '' }}"
+        wx:for="{{ courses }}"
+        wx:key="id"
+        style="border-left-color: {{ item.studentColor || '#A8C5C0' }}"
+        data-id="{{ item.id }}"
+        bindlongpress="onCardLongPress"
+        catchtap="onCourseCardTap"
+      >
+        <view class="card-left">
+          <text class="time">{{ item.startTime }} - {{ item.endTime }}</text>
+          <text class="name">{{ item.studentName }}</text>
+          <text class="meta">{{ item.duration }}分钟</text>
+          <text wx:if="{{ swapSourceId === item.id }}" class="swap-inline-hint">
+            请选择与本课交换的课程
+            <text class="swap-inline-hint-sub">或者点击插入课程在后方插入课程</text>
+          </text>
+        </view>
+        <view class="card-actions">
+          <text class="action-btn" catchtap="onCopy" data-id="{{ item.id }}">复制</text>
+          <text class="action-btn danger" catchtap="onCancel" data-id="{{ item.id }}">{{ item.isFinished ? '删除' : '取消' }}</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-wrap" wx:else>
+      <text class="empty-text">当日暂无课程</text>
+    </view>
+  </scroll-view>
+
+  <view class="fab-wrap safe-bottom">
+    <view class="glass-btn glass-btn-primary add-btn" bindtap="onAdd">
+      {{ swapSourceId ? '插入课程' : '+ 添加课程' }}
+    </view>
+  </view>
+
+  <ios-modal
+    show="{{ showCancelModal }}"
+    title="{{ cancelModalTitle }}"
+    content="{{ cancelModalContent }}"
+    confirmText="确定"
+    cancelText="取消"
+    showCancel="{{ true }}"
+    bind:confirm="onConfirmCancel"
+    bind:cancel="onCancelModal"
+  />
+
+  <ios-modal
+    show="{{ showSwapModal }}"
+    title="{{ swapModalTitle }}"
+    content="{{ swapModalContent }}"
+    confirmText="{{ swapConfirmText }}"
+    cancelText="取消"
+    showCancel="{{ swapShowCancel }}"
+    bind:confirm="onSwapModalConfirm"
+    bind:cancel="onSwapModalCancel"
+  />
+  </view>
+</view>

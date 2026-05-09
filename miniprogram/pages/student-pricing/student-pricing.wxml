@@ -1,0 +1,33 @@
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+  <view class="card glass-card ios-enter">
+    <view class="section-title">学生单价管理</view>
+    <view class="hint text-caption">{{ hint }}</view>
+    <view class="toolbar">
+      <view class="toolbar-meta text-caption">共 {{ totalCount }} 人，未设置 {{ unsetCount }} 人</view>
+      <view
+        class="filter-chip {{ onlyUnset ? 'active' : '' }}"
+        bindtap="onToggleOnlyUnset"
+      >{{ onlyUnset ? '显示全部' : '只看未设置' }}</view>
+    </view>
+
+    <view class="empty text-caption" wx:if="{{ items.length === 0 }}">暂无学生，请先新增课程</view>
+
+    <view class="row" wx:for="{{ items }}" wx:key="name">
+      <text class="name">{{ item.name }}</text>
+      <input
+        class="price-input glass-input"
+        type="digit"
+        placeholder="元/45分钟"
+        value="{{ item.priceInput }}"
+        data-id="{{ item.id }}"
+        bindinput="onPriceInput"
+      />
+    </view>
+
+    <view class="glass-btn glass-btn-primary save-btn" bindtap="onConfirmSave">保存并同步</view>
+  </view>
+  </view>
+</view>
+

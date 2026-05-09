@@ -1,0 +1,74 @@
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+    <view class="year-page-hero glass-card ios-enter">
+      <view class="hero-head">
+        <view class="ios-section-title">年度汇总</view>
+        <view class="glass-btn share-entry" bindtap="onOpenShareModal">分享</view>
+      </view>
+      <view class="ios-section-subtitle">与「统计」页底部一致；固定支出仅由老板承担，不扣教师分成。</view>
+    </view>
+
+    <view class="boss-view-bar glass-card ios-enter ios-enter-delay-1" wx:if="{{ isBoss }}" bindtap="onBossSwitchTeacher">
+      <view class="boss-view-head">
+        <text class="boss-view-title">{{ bossViewingLine }}</text>
+        <text class="boss-view-badge {{ bossViewModeClass }}">{{ bossViewModeText }}</text>
+      </view>
+      <text class="boss-view-hint text-caption">{{ bossViewingHint }}</text>
+    </view>
+
+    <view class="year-summary glass-card ios-enter ios-enter-delay-2">
+      <view class="year-summary-head">
+        <view class="year-summary-titles">
+          <view class="card-title year-summary-title">核算年度</view>
+          <text class="text-caption year-summary-sub">明细口径与统计页相同；房租等固定支出只从老板所得扣除。</text>
+        </view>
+        <picker mode="date" fields="year" value="{{ summaryYearPickerValue }}" bindchange="onSummaryYearPick">
+          <view class="glass-btn year-picker-btn">{{ summaryYear }} 年 ›</view>
+        </picker>
+      </view>
+      <view class="year-summary-row">
+        <text class="label">上课节数</text>
+        <text class="value">{{ yearStatCount }} 节</text>
+      </view>
+      <view class="year-summary-row">
+        <text class="label">课时费合计</text>
+        <text class="value highlight-strong">¥ {{ yearTotalFee }}</text>
+      </view>
+      <view class="year-summary-row">
+        <text class="label">老板所得</text>
+        <text class="value boss-value">¥ {{ yearBossFee }}</text>
+      </view>
+      <view class="year-summary-row">
+        <text class="label">教师所得</text>
+        <text class="value teacher-value">¥ {{ yearTeacherFee }}</text>
+      </view>
+      <view class="year-summary-row year-summary-row--expense">
+        <text class="label">工作室支出（本年度）</text>
+        <text class="value expense-value">¥ {{ yearStudioExpense }}</text>
+      </view>
+      <view class="year-summary-divider"></view>
+      <view class="year-summary-row">
+        <text class="label">全年结余（课费合计 − 固定支出）</text>
+        <text class="value net-value">¥ {{ yearNetRevenue }}</text>
+      </view>
+      <view class="year-summary-row">
+        <text class="label">老板净得（老板所得 − 固定支出）</text>
+        <text class="value net-value net-boss">¥ {{ yearNetBoss }}</text>
+      </view>
+      <text class="year-summary-footnote text-caption">教师所得即为教师实得分成，不参与扣减工作室固定支出。</text>
+      <view class="glass-btn year-manage-btn" bindtap="goStudioExpenses">管理工作室支出</view>
+    </view>
+
+    <view class="sheet-mask" wx:if="{{ showShareModal }}" bindtap="onCloseShareModal">
+      <view class="sheet-panel" catchtap="noop">
+        <view class="sheet-handle"></view>
+        <view class="sheet-title">分享年度汇总</view>
+        <view class="sheet-hint">可复制文字，或生成图片后直接转发给微信好友</view>
+        <view class="glass-btn sheet-btn" bindtap="onCopyYearSummaryText">复制年度汇总（文字）</view>
+        <view class="glass-btn sheet-btn" bindtap="onShareYearSummaryImage">生成年度汇总图</view>
+        <view class="glass-btn sheet-btn cancel" bindtap="onCloseShareModal">关闭</view>
+      </view>
+    </view>
+  </view>
+</view>

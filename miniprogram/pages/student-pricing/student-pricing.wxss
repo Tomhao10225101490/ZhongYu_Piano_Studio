@@ -1,0 +1,94 @@
+.page-wrap {
+  min-height: 100vh;
+  padding: 20rpx 24rpx 40rpx;
+  padding-left: calc(24rpx + env(safe-area-inset-left));
+  padding-right: calc(24rpx + env(safe-area-inset-right));
+  box-sizing: border-box;
+}
+
+.card {
+  padding: 24rpx 28rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1C1C1E;
+  margin-bottom: 10rpx;
+}
+
+.hint {
+  margin-bottom: 14rpx;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+  gap: 12rpx;
+}
+
+.toolbar-meta {
+  flex: 1;
+}
+
+.filter-chip {
+  padding: 10rpx 18rpx;
+  border-radius: 16rpx;
+  font-size: 22rpx;
+  color: #007AFF;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(0, 122, 255, 0.2);
+  transition: transform 0.16s ease, background 0.22s ease, color 0.22s ease;
+}
+
+.filter-chip.active {
+  background: rgba(0, 122, 255, 0.14);
+  color: #0055D4;
+}
+
+.filter-chip:active {
+  transform: scale(0.96);
+}
+
+.empty {
+  padding: 20rpx 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+  gap: 14rpx;
+  animation: iosFadeInUp 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1C1C1E;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.price-input {
+  width: 220rpx;
+  text-align: right;
+  padding: 14rpx 16rpx;
+  border-radius: 14rpx;
+  background: rgba(0, 0, 0, 0.04);
+  font-size: 28rpx;
+}
+
+.save-btn {
+  margin-top: 24rpx;
+  text-align: center;
+  padding: 24rpx;
+  animation: iosFadeInUp 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+

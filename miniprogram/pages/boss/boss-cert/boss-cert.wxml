@@ -1,0 +1,28 @@
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background id="appBgComp" />
+  <view class="page-wrap">
+    <view class="glass-card card" wx:if="{{ isBoss }}">
+      <view class="status-block">
+        <text class="status-title">您已认证，尊贵的老板</text>
+        <text class="status-desc text-caption">返回设置页后可使用「老板查看老师」等功能。</text>
+      </view>
+      <view class="glass-btn glass-btn-primary foot-btn" bindtap="onBack">返回</view>
+      <view class="glass-btn exit-boss-btn foot-btn foot-btn--spaced" bindtap="onExitBossAuth">退出认证</view>
+    </view>
+
+    <view class="glass-card card" wx:else>
+      <text class="field-label">请输入老板口令</text>
+      <view class="code-input-wrap">
+        <input
+          class="code-input"
+          type="text"
+          password="{{ true }}"
+          confirm-type="done"
+          value="{{ code }}"
+          bindinput="onCodeInput"
+        />
+      </view>
+      <view class="glass-btn glass-btn-primary foot-btn" bindtap="onSubmit">提交认证</view>
+    </view>
+  </view>
+</view>

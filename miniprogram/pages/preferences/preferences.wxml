@@ -1,0 +1,71 @@
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background id="appBgComp" />
+  <view class="page-wrap">
+  <view class="card glass-card">
+    <view class="section-title">设置</view>
+    <view class="row">
+      <text class="label">45分钟课单价（元）</text>
+      <input class="input glass-input" type="digit" placeholder="0" value="{{ pricePerClass }}" bindinput="onPriceInput" />
+    </view>
+    <view class="row">
+      <text class="label">老板上交比例（%）</text>
+      <input
+        class="input glass-input"
+        type="digit"
+        placeholder="0"
+        value="{{ bossSharePercent }}"
+        bindinput="onBossSharePercentInput"
+      />
+    </view>
+    <view class="row">
+      <text class="label">默认课时长</text>
+      <picker mode="selector" range="{{ durationOptions }}" value="{{ durationIndex }}" bindchange="onDurationChange">
+        <view class="picker-val">{{ durationOptions[durationIndex] }}分钟</view>
+      </picker>
+    </view>
+    <view class="row">
+      <text class="label">默认提醒</text>
+      <picker mode="selector" range="{{ reminderLabels }}" value="{{ reminderIndex }}" bindchange="onReminderChange">
+        <view class="picker-val">{{ reminderLabels[reminderIndex] }}</view>
+      </picker>
+    </view>
+    <view class="row">
+      <text class="label">音效</text>
+      <switch checked="{{ soundEnabled }}" color="#007AFF" bindchange="onSoundChange" />
+    </view>
+    <view class="row bg-row">
+      <view class="bg-col">
+        <text class="label">页面背景图</text>
+        <text class="bg-hint text-caption">登录后备份可同步到其他设备；未登录仅本机有效</text>
+      </view>
+      <view class="bg-actions">
+        <image wx:if="{{ bgPreview }}" class="bg-thumb" src="{{ bgPreview }}" mode="aspectFill" />
+        <view wx:else class="bg-thumb bg-thumb--empty"></view>
+        <view class="bg-btns">
+          <view class="glass-btn bg-pick-btn" bindtap="onChooseBackground">选择图片</view>
+          <view class="glass-btn bg-clear-btn" wx:if="{{ hasBackground }}" bindtap="onClearBackground">清除</view>
+        </view>
+      </view>
+    </view>
+    <view class="row nav-row" bindtap="onOpenStudents">
+      <text class="label">学生名单</text>
+      <text class="nav-arrow">></text>
+    </view>
+
+    <view class="row nav-row boss-cert-row" bindtap="onOpenBossCert">
+      <view class="boss-cert-col">
+        <text class="label">老板认证</text>
+        <text class="boss-cert-sub text-caption">{{ isBoss ? '已认证' : '点击进入认证页面' }}</text>
+      </view>
+      <text class="nav-arrow">></text>
+    </view>
+
+    <view class="row nav-row boss-open-row" wx:if="{{ isBoss }}" bindtap="onOpenBossTeachers">
+      <text class="label">老板查看老师</text>
+      <text class="nav-arrow">></text>
+    </view>
+
+    <view class="glass-btn glass-btn-primary save-btn" bindtap="onConfirmSave">确定保存</view>
+  </view>
+  </view>
+</view>

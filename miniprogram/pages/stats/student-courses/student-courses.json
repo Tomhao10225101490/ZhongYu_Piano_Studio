@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "app-background": "/components/app-background/app-background"
+  },
+  "navigationBarTitleText": "学生课程详情"
+}

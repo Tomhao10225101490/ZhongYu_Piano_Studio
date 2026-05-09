@@ -1,0 +1,88 @@
+<view class="page-root">
+  <app-background />
+  <view class="about-page">
+  <view class="about-card glass-card">
+    <view class="about-hero">
+      <text class="about-tag">项目进展</text>
+      <text class="about-tag">使用说明</text>
+      <text class="about-tag">感谢支持</text>
+    </view>
+    <view class="about-title">钟于钢琴工作室</view>
+    <view class="about-subtitle">排课 · 统计 · 备份 · 分享</view>
+
+    <view class="about-section">
+      <text class="about-paragraph">
+        这是一个围绕钢琴老师真实教学场景持续迭代的小程序：从排课、提醒、统计，到图片分享、云端备份、老板查看模式，所有功能都在一线使用中不断打磨。
+      </text>
+      <text class="about-paragraph">
+        感谢每一位老师在使用中提出问题与建议。你们的每一次反馈，都在帮助这个项目变得更稳定、更顺手，也更贴近教学本身。
+      </text>
+    </view>
+
+    <view class="about-section">
+      <text class="about-section-title">产品使用说明</text>
+
+      <text class="about-subtitle-item">1）月视图（月历首页）</text>
+      <text class="about-paragraph">
+        在首页可查看整月课表：有课日期以淡蓝色高亮。点击任意日期进入「当日排课」页面，可查看与编辑当天所有课程。
+      </text>
+
+      <text class="about-subtitle-item">2）周视图</text>
+      <text class="about-paragraph">
+        按一周维度展示课程时间分布，可切换上周 / 下周，纵览一周课程节奏。点击课程卡片可直接进入该课程编辑页。
+      </text>
+
+      <text class="about-subtitle-item">3）当日排课</text>
+      <text class="about-paragraph">
+        以时间轴方式展示当天所有课程，可添加、编辑、复制与取消课程。复制会在当日末尾追加一节相同课程；出于教学记录完整性考虑，已上完的课程不可取消或删除。
+      </text>
+
+      <text class="about-subtitle-item">4）课程编辑</text>
+      <text class="about-paragraph">
+        可设置日期、开始时间、课时长（支持 30/45/60/90 分钟等）、学生姓名与上课提醒。修改时间或课时长时，系统会自动对当日后续课程做「顺延调整」，确保时间片不重叠，保持自然连贯的排课节奏。
+      </text>
+
+      <text class="about-subtitle-item">5）统计</text>
+      <text class="about-paragraph">
+        可按本日/本周/本月查看统计，也支持指定任意基准日期查看对应日、周、月。学生列表支持点击进入该学生在当前时间段内的课程详情，并可切换“全部课程 / 已上完”用于历史核对。
+      </text>
+
+      <text class="about-subtitle-item">6）设置</text>
+      <text class="about-paragraph">
+        可设置 45 分钟课单价、默认课时长、默认上课提醒时间，打开或关闭操作音效。同时支持生成课表图片（本周 / 今日 / 指定日期）、生成课表文本，以及导出全部课程数据进行本地备份。
+      </text>
+
+      <text class="about-subtitle-item">7）课表图片分享</text>
+      <text class="about-paragraph">
+        通过「分享课表为图片」功能，系统会使用 iOS 风格的视觉样式自动生成整洁的课表图片，可保存至相册或直接转发给家长与学生，便于清晰直观地查看课程安排。
+      </text>
+
+      <text class="about-subtitle-item">8）音效与交互</text>
+      <text class="about-paragraph">
+        在设置中可开启操作音效，让每一次点击都有细腻反馈；关闭后则进入安静模式，适合上课中或对环境噪音敏感的场景。
+      </text>
+    </view>
+
+    <view class="about-section reward-section">
+      <text class="about-section-title">赞赏与支持</text>
+      <text class="about-paragraph">
+        如果这个小程序帮你节省了时间、减轻了排课与统计负担，欢迎扫码赞赏支持。你的支持会直接用于后续维护与功能优化。
+      </text>
+      <image class="reward-image" src="reward_pic.jpg" mode="widthFix" />
+      <text class="about-paragraph reward-note">
+        真的非常感谢你的信任与鼓励。
+      </text>
+    </view>
+
+    <view class="about-section copyright">
+      <text class="about-paragraph">
+        Copyright © 2026 宁波钟于钢琴工作室 X Tom浩子
+      </text>
+      <text class="about-paragraph">
+        All Rights Reserved.
+      </text>
+    </view>
+  </view>
+  </view>
+</view>
+

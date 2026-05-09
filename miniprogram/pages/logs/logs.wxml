@@ -1,0 +1,14 @@
+<view class="logs-page">
+  <view class="logs-card glass-card">
+    <view class="ios-section-title">日志记录</view>
+    <view class="ios-section-subtitle">最近使用时间</view>
+    <scroll-view class="scrollarea" scroll-y type="list">
+      <block wx:for="{{logs}}" wx:key="timeStamp" wx:for-item="log">
+        <view class="log-item">
+          <text class="log-index">{{index + 1}}</text>
+          <text class="log-date">{{log.date}}</text>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+</view>

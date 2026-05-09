@@ -1,0 +1,54 @@
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+    <view class="hero glass-card ios-enter">
+      <text class="hero-name">{{ studentName }}</text>
+      <text class="hero-sub text-caption">{{ periodTitle }} · {{ periodSubtitle }}</text>
+      <text class="hero-sub text-caption filter-hint">{{ filterFinishedOnly ? '当前：仅统计已上完课程' : '当前：包含全部已排课程' }}</text>
+      <text class="hero-sub text-caption">共 {{ courseCount }} 节 · 课时费 ¥{{ totalFee }}</text>
+      <text class="hero-sub text-caption">老板 ¥{{ bossFee }} · 教师 ¥{{ teacherFee }}</text>
+    </view>
+
+    <view class="filter-bar glass-card ios-enter ios-enter-delay-1">
+      <text class="filter-label text-caption">列表范围</text>
+      <view class="filter-seg">
+        <view
+          class="filter-pill {{ !filterFinishedOnly ? 'filter-pill--active' : '' }}"
+          bindtap="onSetFilterAll"
+        >全部课程</view>
+        <view
+          class="filter-pill {{ filterFinishedOnly ? 'filter-pill--active' : '' }}"
+          bindtap="onSetFilterFinished"
+        >已上完</view>
+      </view>
+    </view>
+
+    <view class="detail-list glass-card ios-enter ios-enter-delay-1" wx:if="{{ detailList.length }}">
+      <view
+        class="detail-card"
+        wx:for="{{ detailList }}"
+        wx:key="id"
+        style="border-left-color: {{ item.studentColor || '#A8C5C0' }}"
+        data-date="{{ item.date }}"
+        bindtap="onGoDay"
+      >
+        <view class="detail-main">
+          <view class="detail-date-row">
+            <text class="detail-date">{{ item.dateDisplay }}</text>
+            <text class="pending-tag" wx:if="{{ item.showPendingTag }}">未上完</text>
+          </view>
+          <text class="detail-time">{{ item.startTime }} · {{ item.duration }}分钟</text>
+          <text class="detail-share text-caption">{{ item.sharePercentDisplay }}</text>
+        </view>
+        <view class="detail-fee">
+          <text class="detail-fee-boss">老板 ¥ {{ item.bossFeeDisplay }}</text>
+          <text class="detail-fee-teacher">教师 ¥ {{ item.teacherFeeDisplay }}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty text-caption glass-card ios-enter ios-enter-delay-1" wx:else>
+      {{ emptyHint }}
+    </view>
+  </view>
+</view>

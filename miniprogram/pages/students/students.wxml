@@ -1,0 +1,98 @@
+<!-- 学生名单：录入后可在排课页从列表选择，单价与备份沿用现有 storage -->
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+    <view class="hero glass-card ios-enter">
+      <view class="section-title">学生名单</view>
+      <text class="hint text-caption">在此维护学生及课时单价、区分色。排课时只能从名单选择学生，请先在此添加后再去排课。</text>
+    </view>
+
+    <view class="search-bar glass-card ios-enter ios-enter-delay-1" wx:if="{{ hasAnyStudent }}">
+      <input
+        class="search-input"
+        value="{{ searchQuery }}"
+        placeholder="按姓名搜索"
+        placeholder-class="search-placeholder"
+        bindinput="onSearchInput"
+      />
+    </view>
+
+    <view class="empty text-caption" wx:if="{{ !hasAnyStudent }}">暂无学生，请点击下方按钮添加。</view>
+    <view class="empty text-caption" wx:elif="{{ list.length === 0 }}">无匹配学生，请换个关键词或清空搜索框。</view>
+
+    <view class="list glass-card ios-enter ios-enter-delay-1" wx:if="{{ list.length > 0 }}">
+      <view
+        class="stu-row"
+        wx:for="{{ list }}"
+        wx:key="id"
+        data-id="{{ item.id }}"
+        bindtap="onEdit"
+      >
+        <view class="color-bar" style="background: {{ item.color || '#A8C5C0' }}"></view>
+        <view class="stu-main">
+          <text class="stu-name">{{ item.name }}</text>
+          <text class="stu-meta text-caption">{{ item.metaLine }}</text>
+        </view>
+        <text class="stu-edit">编辑</text>
+      </view>
+    </view>
+
+    <view class="glass-btn glass-btn-primary add-btn ios-enter ios-enter-delay-2" bindtap="onAdd">+ 添加学生</view>
+  </view>
+
+  <!-- 添加/编辑 -->
+  <view class="modal-mask" wx:if="{{ showForm }}" bindtap="onCloseForm">
+    <view class="modal-card" catchtap="noop">
+      <view class="modal-title">{{ formTitle }}</view>
+      <view class="modal-field modal-field--input">
+        <text class="modal-label">姓名</text>
+        <input
+          class="modal-input"
+          placeholder="学生姓名"
+          placeholder-class="modal-placeholder"
+          value="{{ formName }}"
+          bindinput="onFormNameInput"
+        />
+      </view>
+      <view class="modal-field modal-field--input">
+        <text class="modal-label">课时单价（元/45分钟）</text>
+        <input
+          class="modal-input"
+          type="digit"
+          placeholder="选填，未填则统计用全局单价"
+          placeholder-class="modal-placeholder"
+          value="{{ formPrice }}"
+          bindinput="onFormPriceInput"
+        />
+      </view>
+      <view class="modal-field modal-field--input">
+        <text class="modal-label">老板分成比例（%）</text>
+        <input
+          class="modal-input"
+          type="digit"
+          placeholder="选填，未填则统计用全局比例"
+          placeholder-class="modal-placeholder"
+          value="{{ formBossSharePercent }}"
+          bindinput="onFormBossSharePercentInput"
+        />
+      </view>
+      <view class="modal-field row-picker">
+        <text class="modal-label">默认时长</text>
+        <picker mode="selector" range="{{ durationOptions }}" value="{{ formDurationIndex }}" bindchange="onFormDurationChange">
+          <view class="picker-val">{{ durationOptions[formDurationIndex] }} 分钟</view>
+        </picker>
+      </view>
+      <view class="modal-field row-picker">
+        <text class="modal-label">区分色</text>
+        <picker mode="selector" range="{{ colorPickerRange }}" range-key="label" value="{{ formColorIndex }}" bindchange="onFormColorChange">
+          <view class="picker-val">{{ colorPickerRange[formColorIndex].label }}</view>
+        </picker>
+      </view>
+      <view class="modal-actions">
+        <view class="glass-btn modal-btn" wx:if="{{ editingId }}" bindtap="onDelete">删除</view>
+        <view class="glass-btn modal-btn" bindtap="onCloseForm">取消</view>
+        <view class="glass-btn glass-btn-primary modal-btn primary" bindtap="onSaveForm">保存</view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,225 @@
+/* 个人页 - iOS 26 Liquid Glass */
+.page-wrap {
+  min-height: 100vh;
+  padding: 20rpx 24rpx 160rpx;
+  padding-left: calc(24rpx + env(safe-area-inset-left));
+  padding-right: calc(24rpx + env(safe-area-inset-right));
+  box-sizing: border-box;
+}
+
+/* ---- Profile Card ---- */
+.profile-card {
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+}
+.profile-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  margin-bottom: 16rpx;
+}
+.avatar-btn {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  line-height: 1;
+}
+.avatar-btn::after {
+  border: none;
+}
+.avatar-img {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  border: 6rpx solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  transition: transform 0.18s ease;
+}
+.avatar-btn:active .avatar-img {
+  transform: scale(0.96);
+}
+.avatar-placeholder {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx dashed rgba(0, 0, 0, 0.12);
+}
+.avatar-icon {
+  font-size: 80rpx;
+  opacity: 0.5;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  justify-content: center;
+  max-width: 100%;
+}
+.profile-name {
+  font-size: 54rpx;
+  font-weight: 700;
+  color: #1C1C1E;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 840rpx;
+}
+
+/* 老板模式：昵称流动金色效果 */
+.profile-name-boss-gold {
+  color: transparent;
+  background: linear-gradient(
+    112deg,
+    #7a5a00 0%,
+    #c5961f 16%,
+    #fff4b8 32%,
+    #d9ab2f 48%,
+    #7a5a00 64%,
+    #efcf66 82%,
+    #7a5a00 100%
+  );
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: bossGoldFlow 5.6s ease-in-out infinite alternate;
+  text-shadow: 0 1rpx 2rpx rgba(166, 123, 0, 0.22);
+}
+
+@keyframes bossGoldFlow {
+  0% {
+    background-position: 14% 50%;
+  }
+  100% {
+    background-position: 86% 50%;
+  }
+}
+.name-edit-icon {
+  font-size: 24rpx;
+  color: #007AFF;
+}
+.profile-hints {
+  margin-bottom: 8rpx;
+  text-align: center;
+}
+
+/* Auth buttons */
+.auth-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+.auth-btn {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx;
+  font-size: 26rpx;
+}
+
+/* ---- Menu Card ---- */
+.menu-card {
+  padding: 4rpx 0;
+  margin-bottom: 20rpx;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 28rpx;
+  transition: background 0.16s ease, transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.16s ease;
+}
+.menu-item:active {
+  background: rgba(0, 0, 0, 0.03);
+  transform: scale(0.995);
+}
+.menu-icon {
+  font-size: 36rpx;
+  width: 56rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+.menu-text {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1C1C1E;
+}
+.menu-arrow {
+  font-size: 32rpx;
+  color: #C0C4CC;
+  font-weight: 300;
+}
+.menu-divider {
+  height: 1rpx;
+  background: rgba(0, 0, 0, 0.06);
+  margin-left: 84rpx;
+}
+
+/* ---- Nick Modal ---- */
+.nick-input-wrap {
+  width: 100%;
+  box-sizing: border-box;
+  background: #f2f2f7;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  border-radius: 16rpx;
+  padding: 22rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.nick-input {
+  display: block;
+  width: 100%;
+  min-height: 52rpx;
+  height: 52rpx;
+  line-height: 52rpx;
+  padding: 0;
+  margin: 0;
+  font-size: 30rpx;
+  color: #1c1c1e;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.nick-placeholder {
+  color: #aeaeb2;
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.detail-list {
+  margin-bottom: 20rpx;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 26rpx;
+  color: #8e8e93;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  font-size: 26rpx;
+  color: #1c1c1e;
+  text-align: right;
+  word-break: break-all;
+}

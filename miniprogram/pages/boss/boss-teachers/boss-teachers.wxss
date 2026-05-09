@@ -1,0 +1,104 @@
+.page-wrap {
+  min-height: 100vh;
+  padding: 20rpx 24rpx 160rpx;
+  padding-left: calc(24rpx + env(safe-area-inset-left));
+  padding-right: calc(24rpx + env(safe-area-inset-right));
+  box-sizing: border-box;
+}
+
+.boss-hero {
+  padding: 24rpx 26rpx;
+  margin-bottom: 18rpx;
+}
+.hero-title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #1C1C1E;
+  margin-bottom: 8rpx;
+}
+.hero-sub {
+  display: block;
+  line-height: 1.4;
+}
+
+.list {
+  padding: 10rpx;
+}
+
+.teacher-wrap {
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+.teacher-wrap:last-child {
+  border-bottom: none;
+}
+
+.teacher-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 18rpx 18rpx;
+}
+
+.teacher-avatar {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.teacher-avatar--empty {
+  background: rgba(0, 0, 0, 0.06);
+  border: 2rpx dashed rgba(0, 0, 0, 0.12);
+}
+
+.teacher-info {
+  flex: 1;
+  min-width: 0;
+}
+.teacher-name {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1C1C1E;
+  margin-bottom: 6rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.teacher-meta {
+  display: block;
+}
+
+.teacher-select {
+  width: 36rpx;
+  height: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.select-dot {
+  font-size: 26rpx;
+  color: #007AFF;
+  font-weight: 900;
+}
+
+.empty {
+  padding: 28rpx;
+  margin-top: 10rpx;
+}
+
+.loading {
+  padding: 28rpx;
+  text-align: center;
+}
+
+.teacher-actions {
+  padding: 0 18rpx 18rpx;
+}
+
+.view-btn {
+  text-align: center;
+  padding: 20rpx 10rpx;
+}
+

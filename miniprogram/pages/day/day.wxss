@@ -1,0 +1,194 @@
+/* 某日排课 - iOS 风格；适配安全区与宽度不溢出 */
+.page-wrap {
+  min-height: 100vh;
+  padding: 24rpx;
+  padding-left: calc(24rpx + env(safe-area-inset-left));
+  padding-right: calc(24rpx + env(safe-area-inset-right));
+  /* 底部留白改由列表内边距承担，避免与固定按钮重复「吃掉」可视高度 */
+  padding-bottom: 24rpx;
+  box-sizing: border-box;
+}
+
+.day-subtitle {
+  margin: 0 8rpx 16rpx;
+}
+
+.day-header {
+  padding: 28rpx 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.day-title {
+  font-family: "PingFang SC", -apple-system, sans-serif;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1c1c1e;
+  letter-spacing: 0.02em;
+  display: block;
+}
+
+.weekday-text {
+  font-size: 26rpx;
+  color: #8e8e93;
+  margin-top: 8rpx;
+}
+
+.day-scroll {
+  flex: 1;
+  height: calc(100vh - 330rpx);
+}
+
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  /* 为底部固定「添加课程」留出滚动余量，避免最后一节被挡住 */
+  padding-bottom: calc(32rpx + 136rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.course-card {
+  padding: 28rpx 24rpx;
+  border-left: 6rpx solid #a8c5c0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background 0.28s ease, opacity 0.2s ease;
+}
+
+.page-wrap:not(.page-wrap--swap-pick) .course-card:active {
+  transform: scale(0.992);
+}
+
+/* 待替换选中：内部蓝色光晕略深，偏 iOS 系统蓝层次 */
+.course-card--swap-selected {
+  transform: none;
+  z-index: 2;
+  position: relative;
+  background: linear-gradient(
+    168deg,
+    rgba(0, 132, 255, 0.2) 0%,
+    rgba(90, 178, 255, 0.14) 38%,
+    rgba(214, 236, 255, 0.52) 72%,
+    rgba(255, 255, 255, 0.58) 100%
+  );
+  box-shadow:
+    inset 0 0 56rpx rgba(0, 104, 214, 0.14),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.72),
+    0 2rpx 10rpx rgba(0, 60, 140, 0.06);
+  backdrop-filter: saturate(168%) blur(16px);
+  -webkit-backdrop-filter: saturate(168%) blur(16px);
+}
+
+.page-wrap--swap-pick .course-card--swap-selected:active {
+  transform: none;
+}
+
+.card-left .time {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1c1c1e;
+  display: block;
+}
+
+.card-left .name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #3a3a3c;
+  margin-top: 8rpx;
+}
+
+.card-left .meta {
+  font-size: 24rpx;
+  color: #8e8e93;
+  margin-top: 4rpx;
+}
+
+/* 长按选中后，卡片内指引文案 */
+.swap-inline-hint {
+  display: block;
+  margin-top: 18rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx solid rgba(0, 122, 255, 0.2);
+  font-family: "PingFang SC", -apple-system, sans-serif;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #007aff;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+}
+
+.swap-inline-hint-sub {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: rgba(0, 122, 255, 0.95);
+  letter-spacing: 0.01em;
+}
+
+.card-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.action-btn {
+  font-family: "PingFang SC", -apple-system, sans-serif;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #007aff;
+}
+
+.action-btn.danger {
+  color: #ff3b30;
+}
+
+.empty-wrap {
+  padding: 80rpx 0;
+  padding-bottom: calc(80rpx + 32rpx + 136rpx + env(safe-area-inset-bottom));
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #8e8e93;
+}
+
+.fab-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 20rpx 24rpx;
+  padding-left: calc(24rpx + env(safe-area-inset-left));
+  padding-right: calc(24rpx + env(safe-area-inset-right));
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(
+    180deg,
+    rgba(242, 242, 247, 0) 0%,
+    rgba(242, 242, 247, 0.72) 28%,
+    rgba(242, 242, 247, 0.96) 55%,
+    #f2f2f7 100%
+  );
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.fab-wrap .add-btn {
+  pointer-events: auto;
+}
+
+.add-btn {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  padding: 30rpx 24rpx;
+  font-family: "PingFang SC", -apple-system, sans-serif;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #fff;
+}

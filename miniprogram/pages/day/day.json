@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "ios-modal": "/components/ios-modal/ios-modal"
+  },
+  "navigationBarTitleText": "当日排课",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

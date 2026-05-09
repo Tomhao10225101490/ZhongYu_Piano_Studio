@@ -1,0 +1,104 @@
+/* iOS 风格弹窗：与系统 Alert 一致的圆润样式 */
+.ios-modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 48rpx;
+  box-sizing: border-box;
+  animation: ios-modal-fade-in 0.25s ease;
+}
+
+@keyframes ios-modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ios-modal-box {
+  width: 100%;
+  max-width: 560rpx;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 28rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 24rpx 48rpx rgba(0, 0, 0, 0.12), 0 0 0 1rpx rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  animation: ios-modal-scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes ios-modal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ios-modal-title {
+  font-family: "PingFang SC", -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: 34rpx;
+  color: #1C1C1E;
+  text-align: center;
+  padding: 40rpx 32rpx 16rpx;
+  letter-spacing: 0.02em;
+}
+
+.ios-modal-content {
+  font-family: "PingFang SC", -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 30rpx;
+  color: #3A3A3C;
+  text-align: center;
+  padding: 0 32rpx 32rpx;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  white-space: pre-line;
+  max-height: 52vh;
+  overflow-y: auto;
+}
+
+.ios-modal-actions {
+  display: flex;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.08);
+}
+
+.ios-modal-btn {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 24rpx;
+  font-family: "PingFang SC", -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: 32rpx;
+  letter-spacing: 0.02em;
+  transition: background 0.15s ease;
+}
+
+.ios-modal-btn:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.ios-modal-btn.cancel {
+  color: #8E8E93;
+  border-right: 1rpx solid rgba(0, 0, 0, 0.08);
+}
+
+.ios-modal-btn.confirm {
+  color: #007AFF;
+}
+
+.ios-modal-btn.confirm.full {
+  border-right: none;
+}

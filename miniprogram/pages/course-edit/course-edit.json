@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "ios-modal": "/components/ios-modal/ios-modal"
+  },
+  "navigationBarTitleText": "编辑课程"
+}

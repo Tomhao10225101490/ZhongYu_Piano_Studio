@@ -1,0 +1,138 @@
+<!-- 新增/编辑课程：时间、学生、时长；保存时触发自动顺延与冲突检测 -->
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <!-- boss 主题 -->
+  <app-background />
+  <view class="page-wrap">
+  <view class="edit-hero glass-card">
+    <view class="ios-section-title">{{ isEdit ? '编辑课程' : '新增课程' }}</view>
+    <view class="ios-section-subtitle">学生与课时单价均以「学生名单」为准；此处仅展示，改价请去名单。</view>
+  </view>
+  <view class="orphan-hint glass-card" wx:if="{{ orphanStudentName }}">
+    <text class="orphan-hint-text">原课程学生「{{ orphanStudentName }}」已不在当前名单中，请从下方重新选择学生后再保存。</text>
+  </view>
+  <view class="empty-roster-hint glass-card" wx:if="{{ !hasStudents }}">
+    <text class="empty-roster-text">还没有学生，请先到「设置 → 学生名单」添加学生，再回来排课。</text>
+    <view class="glass-btn glass-btn-primary empty-roster-btn" bindtap="onOpenStudents">去添加学生</view>
+  </view>
+  <view class="form glass-card">
+    <view class="row">
+      <text class="label">日期</text>
+      <text class="value">{{ dateDisplay }}</text>
+    </view>
+    <view class="row">
+      <text class="label">开始时间</text>
+      <picker mode="time" value="{{ startTime }}" bindchange="onStartTimeChange">
+        <view class="picker-val">{{ startTime || '选择时间' }}</view>
+      </picker>
+    </view>
+    <view class="row row--duration">
+      <text class="label">时长（分钟）</text>
+      <view class="duration-block">
+        <picker mode="selector" range="{{ durationOptions }}" value="{{ durationIndex }}" bindchange="onDurationChange">
+          <view class="picker-val">{{ durationOptions[durationIndex] }}分钟</view>
+        </picker>
+        <view class="duration-custom-wrap">
+          <input
+            class="duration-custom-input"
+            type="number"
+            value="{{ customDurationDraft }}"
+            placeholder="自定义分钟数"
+            placeholder-class="student-search-placeholder"
+            confirm-type="done"
+            bindinput="onCustomDurationInput"
+            bindblur="onCustomDurationConfirm"
+            bindconfirm="onCustomDurationConfirm"
+          />
+          <view class="glass-btn duration-custom-btn" bindtap="onCustomDurationConfirm">应用</view>
+        </view>
+      </view>
+    </view>
+    <view class="row row--student">
+      <text class="label">学生</text>
+      <view class="student-block">
+        <picker wx:if="{{ hasStudents }}" mode="selector" range="{{ studentPickerOptions }}" range-key="label" value="{{ studentPickerIndex }}" bindchange="onStudentPickerChange">
+          <view class="picker-val">{{ studentPickerOptions.length ? studentPickerOptions[studentPickerIndex].label : '加载中…' }}</view>
+        </picker>
+        <text wx:else class="picker-val picker-val--disabled">请先在下方或设置中添加学生</text>
+        <block wx:if="{{ hasStudents }}">
+          <text class="student-search-hint text-caption">或输入姓名查找</text>
+          <!-- 输入框放在不透明容器内，避免在 glass-card（backdrop-filter）内直接渲染导致真机文字重叠/镜像 -->
+          <view class="student-search-input-wrap">
+            <input
+              class="student-search-input"
+              type="text"
+              value="{{ studentSearchQuery }}"
+              placeholder="输入姓名筛选"
+              placeholder-class="student-search-placeholder"
+              confirm-type="search"
+              bindinput="onStudentSearchInput"
+            />
+          </view>
+          <view class="student-suggest" wx:if="{{ studentSuggestList.length }}">
+            <view
+              class="student-suggest-item"
+              wx:for="{{ studentSuggestList }}"
+              wx:key="id"
+              data-id="{{ item.id }}"
+              catchtap="onPickStudentFromSuggest"
+            >
+              <text class="student-suggest-name">{{ item.name }}</text>
+            </view>
+          </view>
+          <text wx:if="{{ studentSearchQuery && !studentSuggestList.length }}" class="student-no-match text-caption">无匹配，请换关键词或从上方列表选择</text>
+        </block>
+      </view>
+    </view>
+    <view class="row row--price">
+      <view class="label-col">
+        <text class="label">该学生单价</text>
+        <text class="price-footnote text-caption">改价请去「学生名单」</text>
+      </view>
+      <view class="price-display-col">
+        <text class="value price-readonly">{{ studentPriceLine }}</text>
+      </view>
+    </view>
+    <view class="row row--price">
+      <view class="label-col">
+        <text class="label">该学生分成</text>
+        <text class="price-footnote text-caption">改比例请去「学生名单」</text>
+      </view>
+      <view class="price-display-col">
+        <text class="value price-readonly">{{ studentShareLine }}</text>
+      </view>
+    </view>
+    <view class="row">
+      <text class="label">上课提醒</text>
+      <picker mode="selector" range="{{ reminderOptions }}" range-key="label" value="{{ reminderIndex }}" bindchange="onReminderChange">
+        <view class="picker-val">{{ reminderOptions[reminderIndex].label }}</view>
+      </picker>
+    </view>
+    <view class="row" wx:if="{{ isEdit }}">
+      <text class="label">复制到其他日期</text>
+      <picker mode="date" start="{{ todayStr }}" bindchange="onCopyToOtherDate">
+        <view class="link-btn">选择日期并复制</view>
+      </picker>
+    </view>
+    <view class="row nav-row" bindtap="onOpenStudents">
+      <text class="label">学生名单</text>
+      <text class="link-btn">添加 / 改单价 / 区分色</text>
+    </view>
+  </view>
+
+  <view class="btn-wrap">
+    <view class="glass-btn glass-btn-primary save-btn" bindtap="onSave">保存</view>
+    <view class="glass-btn cancel-btn" wx:if="{{ isEdit }}" bindtap="onDelete">{{ isFinished ? '删除课程' : '取消课程' }}</view>
+  </view>
+
+  <ios-modal
+    show="{{ modalShow }}"
+    title="{{ modalTitle }}"
+    content="{{ modalContent }}"
+    confirmText="{{ modalConfirmText }}"
+    cancelText="{{ modalCancelText }}"
+    showCancel="{{ modalShowCancel }}"
+    bind:confirm="onModalConfirm"
+    bind:cancel="onModalCancel"
+  />
+  </view>
+</view>

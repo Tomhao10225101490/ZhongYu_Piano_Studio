@@ -1,0 +1,205 @@
+/* 年度汇总独立页 */
+.page-wrap {
+  min-height: 100vh;
+  padding: 24rpx;
+  padding-left: calc(24rpx + env(safe-area-inset-left));
+  padding-right: calc(24rpx + env(safe-area-inset-right));
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.year-page-hero {
+  padding: 28rpx 28rpx 22rpx;
+  margin-bottom: 20rpx;
+}
+
+.hero-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.share-entry {
+  flex-shrink: 0;
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  border-radius: 18rpx;
+  color: #007aff;
+  font-weight: 600;
+}
+
+.year-summary {
+  padding: 28rpx 28rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+
+.year-summary-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 18rpx;
+}
+
+.year-summary-titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.year-summary-title {
+  margin-bottom: 8rpx;
+}
+
+.card-title {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1c1c1e;
+  letter-spacing: 0.02em;
+}
+
+.year-summary-sub {
+  display: block;
+  line-height: 1.4;
+}
+
+.year-picker-btn {
+  flex-shrink: 0;
+  padding: 12rpx 20rpx;
+  font-size: 24rpx;
+  border-radius: 18rpx;
+  font-weight: 600;
+  color: #007aff;
+}
+
+.year-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.year-summary-row .label {
+  font-size: 26rpx;
+  color: #3a3a3c;
+  max-width: 62%;
+}
+
+.year-summary-row .value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+.highlight-strong {
+  color: #007aff;
+  font-size: 30rpx;
+}
+
+.year-summary-row--expense {
+  padding-top: 20rpx;
+}
+
+.expense-value {
+  color: #c45c7a;
+}
+
+.boss-value {
+  color: #05945c;
+}
+
+.teacher-value {
+  color: #007aff;
+}
+
+.year-summary-divider {
+  height: 1rpx;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 12rpx 0 8rpx;
+}
+
+.net-value {
+  font-size: 30rpx;
+  color: #1c1c1e;
+}
+
+.net-boss {
+  color: #05945c;
+}
+
+.net-teacher {
+  color: #007aff;
+}
+
+.year-manage-btn {
+  margin-top: 20rpx;
+  text-align: center;
+  padding: 22rpx 20rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 20rpx;
+}
+
+.year-summary-footnote {
+  display: block;
+  padding: 16rpx 0 8rpx;
+  line-height: 1.45;
+  color: #8e8e93;
+}
+
+.sheet-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 260;
+  display: flex;
+  align-items: flex-end;
+}
+
+.sheet-panel {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12rpx 20rpx calc(20rpx + env(safe-area-inset-bottom));
+  border-top-left-radius: 28rpx;
+  border-top-right-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.sheet-handle {
+  width: 68rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  margin: 6rpx auto 14rpx;
+  background: rgba(60, 60, 67, 0.26);
+}
+
+.sheet-title {
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1c1c1e;
+}
+
+.sheet-hint {
+  text-align: center;
+  font-size: 24rpx;
+  color: #8e8e93;
+  margin-top: 8rpx;
+  margin-bottom: 14rpx;
+}
+
+.sheet-btn {
+  margin-top: 12rpx;
+  text-align: center;
+  padding: 24rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.sheet-btn.cancel {
+  color: #8e8e93;
+}

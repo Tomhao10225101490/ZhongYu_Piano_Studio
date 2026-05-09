@@ -1,0 +1,33 @@
+{
+  "usingComponents": {
+    "app-background": "/components/app-background/app-background"
+  },
+  "pages": [
+    "pages/index/index",
+    "pages/week/week",
+    "pages/day/day",
+    "pages/course-edit/course-edit",
+    "pages/students/students",
+    "pages/stats/stats",
+    "pages/studio-expenses/studio-expenses",
+    "pages/stats/student-courses/student-courses",
+    "pages/settings/settings",
+    "pages/year-summary/year-summary",
+    "pages/preferences/preferences",
+    "pages/boss/boss-teachers/boss-teachers",
+    "pages/boss/boss-cert/boss-cert",
+    "pages/student-pricing/student-pricing",
+    "pages/backup-center/backup-center",
+    "pages/schedule-image/schedule-image",
+    "pages/about/about"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "钟于钢琴工作室",
+    "navigationBarBackgroundColor": "#F2F2F7",
+    "backgroundColor": "#F2F2F7"
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "lazyCodeLoading": "requiredComponents"
+}

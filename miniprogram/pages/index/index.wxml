@@ -1,0 +1,100 @@
+<!-- 月视图 -->
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+  <!-- 月份标题 -->
+  <view class="month-header glass-card ios-enter">
+    <text class="nav-arrow" bindtap="prevMonth">‹</text>
+    <text class="month-title">{{ year }}年{{ month }}月</text>
+    <text class="nav-arrow" bindtap="nextMonth">›</text>
+  </view>
+
+  <!-- 用户 scope -->
+  <view class="scope-bar ios-enter ios-enter-delay-1">
+    <text class="scope-text text-caption">{{ userScopeText }}</text>
+  </view>
+  <view class="boss-view-bar glass-card ios-enter ios-enter-delay-1" wx:if="{{ isBoss }}" bindtap="onBossSwitchTeacher">
+    <view class="boss-view-head">
+      <text class="boss-view-title">{{ bossViewingLine }}</text>
+      <text class="boss-view-badge {{ bossViewModeClass }}">{{ bossViewModeText }}</text>
+    </view>
+    <text class="boss-view-hint text-caption">{{ bossViewingHint }}</text>
+  </view>
+  <view class="top-actions ios-enter ios-enter-delay-1">
+    <view class="glass-btn share-entry" bindtap="onOpenShareModal">分享</view>
+    <view class="glass-btn share-entry" bindtap="onOpenImportModal">导入</view>
+  </view>
+
+  <!-- 星期表头 -->
+  <view class="weekday-row ios-enter ios-enter-delay-2">
+    <text class="weekday" wx:for="{{ ['日','一','二','三','四','五','六'] }}" wx:key="*this">{{ item }}</text>
+  </view>
+
+  <!-- 日历网格 -->
+  <view class="calendar-grid ios-enter ios-enter-delay-3">
+    <block wx:for="{{ calendarDays }}" wx:key="key">
+      <view
+        class="day-cell {{ item.empty ? 'empty' : '' }} {{ item.today ? 'today' : '' }} {{ item.hasClass ? 'has-class' : '' }}"
+        data-date="{{ item.date }}"
+        bindtap="onDayTap"
+      >
+        <text class="day-num">{{ item.day }}</text>
+        <view class="day-dot" wx:if="{{ item.hasClass }}"></view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 底部 Tab -->
+  <view class="ios-tabbar ios-enter ios-enter-delay-4">
+    <view class="ios-tab-item active">
+      <text class="ios-tab-label">月视图</text>
+    </view>
+    <view class="ios-tab-item" bindtap="goWeek">
+      <text class="ios-tab-label">周视图</text>
+    </view>
+    <view class="ios-tab-item" bindtap="goStats">
+      <text class="ios-tab-label">统计</text>
+    </view>
+    <view class="ios-tab-item" bindtap="goSettings">
+      <text class="ios-tab-label">个人</text>
+    </view>
+  </view>
+
+  <!-- 分享弹窗 -->
+  <view class="sheet-mask" wx:if="{{ showShareModal }}" bindtap="onCloseShareModal">
+    <view class="sheet-panel" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">分享课表</view>
+      <view class="sheet-hint">可分享图片或文本，复制后可发给家长</view>
+      <view class="glass-btn sheet-btn" bindtap="onShareWeekImage">本周课表图</view>
+      <view class="glass-btn sheet-btn" bindtap="onShareTodayImage">今日课表图</view>
+      <picker mode="date" bindchange="onShareDayPick">
+        <view class="glass-btn sheet-btn">选择日期生成课表图</view>
+      </picker>
+      <view class="glass-btn sheet-btn" bindtap="onCopyShareText">复制本月分享文本</view>
+      <view class="glass-btn sheet-btn cancel" bindtap="onCloseShareModal">关闭</view>
+    </view>
+  </view>
+
+  <!-- 导入分享文本 -->
+  <view class="sheet-mask" wx:if="{{ showImportModal }}" bindtap="onCloseImportModal">
+    <view class="sheet-panel import-sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">导入本月分享文本</view>
+      <view class="sheet-hint">粘贴“复制本月分享文本”内容，将自动识别并导入课程</view>
+      <textarea
+        class="import-textarea"
+        maxlength="-1"
+        placeholder="示例：\n2026年4月课表\n2026-04-18 09:00 45分钟 小明\n2026-04-18 10:00 45分钟 小红"
+        placeholder-class="import-placeholder"
+        value="{{ importTextDraft }}"
+        bindinput="onImportTextInput"
+      />
+      <view class="import-actions">
+        <view class="glass-btn sheet-btn import-btn-cancel" bindtap="onCloseImportModal">取消</view>
+        <view class="glass-btn glass-btn-primary sheet-btn import-btn-confirm" bindtap="onConfirmImportFromShareText">校验并导入</view>
+      </view>
+    </view>
+  </view>
+  </view>
+</view>

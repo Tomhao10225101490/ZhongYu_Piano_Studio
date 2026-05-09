@@ -1,0 +1,31 @@
+<!-- 课表图片生成页：Canvas 绘制本周或当日课表，导出为图片 -->
+<view class="page-root">
+  <app-background />
+  <view class="page-wrap">
+  <view class="title-wrap glass-card">
+    <view class="ios-section-title">{{ title }}</view>
+    <text class="page-subtitle">{{ subtitle }}</text>
+  </view>
+
+  <view class="canvas-wrap" wx:if="{{ !imagePath }}" style="width: {{ canvasWidth }}px; height: {{ canvasHeight }}px;">
+    <canvas
+      canvas-id="scheduleCanvas"
+      id="scheduleCanvas"
+      class="schedule-canvas"
+      style="width: {{ canvasWidth }}px; height: {{ canvasHeight }}px;"
+    />
+  </view>
+
+  <view class="tip text-caption" wx:if="{{ !imagePath }}">正在生成图片…</view>
+  <view class="preview-wrap" wx:if="{{ imagePath }}">
+    <image class="preview-img" src="{{ imagePath }}" mode="widthFix" />
+    <view class="btn-row">
+      <view class="glass-btn glass-btn-primary" bindtap="onSavePhoto">保存到相册</view>
+      <view class="glass-btn" bindtap="onPreview">预览大图</view>
+    </view>
+    <view class="btn-row btn-row--forward">
+      <view class="glass-btn glass-btn-forward" bindtap="onForwardImage">转发给微信好友</view>
+    </view>
+  </view>
+  </view>
+</view>

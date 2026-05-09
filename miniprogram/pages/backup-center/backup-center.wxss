@@ -1,0 +1,26 @@
+/* 备份详情 - iOS 26 Liquid Glass */
+.page-wrap {
+  min-height: 100vh;
+  padding: 20rpx 24rpx 40rpx;
+  padding-left: calc(24rpx + env(safe-area-inset-left));
+  padding-right: calc(24rpx + env(safe-area-inset-right));
+  box-sizing: border-box;
+}
+.card {
+  padding: 24rpx 28rpx;
+}
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1C1C1E;
+  margin-bottom: 8rpx;
+}
+.hint {
+  margin-bottom: 12rpx;
+}
+.backup-btn,
+.copy-btn {
+  margin-top: 14rpx;
+  text-align: center;
+  padding: 24rpx;
+}

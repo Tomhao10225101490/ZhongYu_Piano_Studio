@@ -1,0 +1,39 @@
+<view class="page-root boss-ui">
+  <app-background />
+  <view class="page-wrap">
+    <view class="boss-hero glass-card">
+      <text class="hero-title">老板查看老师</text>
+      <text class="hero-sub text-caption">选择老师后将载入对应数据进行只读查看</text>
+    </view>
+
+    <view class="list glass-card" wx:if="{{ !loading && teachers.length }}">
+      <view class="teacher-wrap" wx:for="{{ teachers }}" wx:for-index="idx" wx:key="$index">
+      <view class="teacher-row" data-idx="{{ idx }}" bindtap="onSelectTeacher">
+        <image class="teacher-avatar" wx:if="{{ item.profile.avatarUrl }}" src="{{ item.profile.avatarUrl }}" mode="aspectFill" />
+        <view class="teacher-avatar teacher-avatar--empty" wx:else />
+        <view class="teacher-info">
+          <text class="teacher-name">{{ item.profile.nickName || '老师' }}</text>
+          <text class="teacher-meta text-caption">ID: {{ item.ownerKey || '未提供' }}</text>
+          <text class="teacher-meta text-caption">{{ item.students.length }} 学生 · {{ item.courses.length }} 课</text>
+        </view>
+        <view class="teacher-select" wx:if="{{ activeIndex === idx }}">
+          <text class="select-dot">✓</text>
+        </view>
+      </view>
+      <view class="teacher-actions" wx:if="{{ activeIndex === idx }}">
+        <view class="glass-btn glass-btn-primary view-btn" bindtap="viewTeacher">进行查看</view>
+      </view>
+      </view>
+    </view>
+
+    <view class="empty glass-card text-caption" wx:if="{{ !loading && !teachers.length }}">
+      暂无老师数据（请检查服务器返回）
+    </view>
+
+    <view class="loading" wx:if="{{ loading }}">
+      加载中…
+    </view>
+
+  </view>
+</view>
+

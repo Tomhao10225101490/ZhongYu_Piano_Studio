@@ -1,0 +1,110 @@
+<view class="page-root {{ isBoss ? 'boss-ui' : '' }}">
+  <app-background />
+  <view class="page-wrap">
+    <view class="hero glass-card ios-enter">
+      <view class="section-title">工作室支出</view>
+      <text class="hint text-caption">按月登记固定开支（房租、物业等）。统计里「年度汇总」会按自然年合计；同一个月可记多笔（例如房租+网费），下列表按月份分组并显示小计。老板查看其他老师时也可在此维护对方支出。</text>
+    </view>
+
+    <view class="boss-exp-hint glass-card ios-enter ios-enter-delay-1" wx:if="{{ viewingOtherHint }}">
+      <text class="text-caption">{{ viewingOtherHint }}</text>
+    </view>
+
+    <view class="summary-strip glass-card ios-enter ios-enter-delay-1" wx:if="{{ hasAnyInStorage }}">
+      <view class="summary-strip-text">
+        <text class="summary-main">{{ summaryMain }}</text>
+        <text class="summary-sub text-caption" wx:if="{{ summarySub }}">{{ summarySub }}</text>
+      </view>
+      <view class="summary-actions">
+        <view class="glass-btn summary-btn" bindtap="onCopySummary">复制清单</view>
+      </view>
+    </view>
+
+    <view class="filter-row glass-card ios-enter ios-enter-delay-1" wx:if="{{ hasAnyInStorage }}">
+      <text class="filter-label">年份</text>
+      <picker mode="selector" range="{{ filterLabels }}" value="{{ filterYearIndex }}" bindchange="onFilterYearPick">
+        <view class="filter-picker-val">{{ filterLabels[filterYearIndex] }} ›</view>
+      </picker>
+    </view>
+
+    <view class="search-bar glass-card ios-enter ios-enter-delay-1" wx:if="{{ hasAnyInStorage }}">
+      <input
+        class="search-input"
+        value="{{ searchQuery }}"
+        placeholder="搜索说明或年月"
+        placeholder-class="search-placeholder"
+        bindinput="onSearchInput"
+      />
+      <view class="search-clear text-caption" wx:if="{{ searchQuery }}" bindtap="onClearSearch">清空</view>
+    </view>
+
+    <view class="empty text-caption" wx:if="{{ !hasAnyInStorage }}">暂无记录，点击下方按钮添加。</view>
+    <view class="empty text-caption" wx:elif="{{ monthGroups.length === 0 }}">无匹配记录，请调整年份或搜索关键词。</view>
+
+    <view class="groups-wrap ios-enter ios-enter-delay-2" wx:if="{{ monthGroups.length > 0 }}">
+      <view class="month-group glass-card" wx:for="{{ monthGroups }}" wx:key="yearMonth">
+        <view class="group-head">
+          <text class="group-title">{{ item.yearMonthDisplay }}</text>
+          <text class="group-meta text-caption">{{ item.itemCount }} 笔 · 小计 ¥{{ item.monthSubtotal }}</text>
+        </view>
+        <view
+          class="exp-row"
+          wx:for="{{ item.items }}"
+          wx:for-item="row"
+          wx:key="id"
+          data-id="{{ row.id }}"
+          bindtap="onEdit"
+        >
+          <view class="exp-bar"></view>
+          <view class="exp-main">
+            <text class="exp-note">{{ row.noteLine }}</text>
+          </view>
+          <text class="exp-amt">¥ {{ row.amountDisplay }}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="glass-btn glass-btn-primary add-btn ios-enter ios-enter-delay-2" bindtap="onAdd">+ 添加支出</view>
+  </view>
+
+  <view class="modal-mask" wx:if="{{ showForm }}" bindtap="onCloseForm">
+    <view class="modal-card" catchtap="noop">
+      <view class="modal-title">{{ formTitle }}</view>
+      <view class="modal-field row-picker">
+        <text class="modal-label">归属月份</text>
+        <picker mode="date" fields="month" value="{{ formYearMonth }}" bindchange="onFormMonthChange">
+          <view class="modal-picker-val">{{ formYearMonth }} ›</view>
+        </picker>
+      </view>
+      <view class="modal-field modal-field--input">
+        <text class="modal-label">金额（元）</text>
+        <input
+          class="modal-input"
+          type="digit"
+          placeholder="例如 3500"
+          placeholder-class="modal-placeholder"
+          value="{{ formAmount }}"
+          bindinput="onFormAmountInput"
+        />
+      </view>
+      <view class="modal-field modal-field--input">
+        <text class="modal-label">说明</text>
+        <input
+          class="modal-input"
+          placeholder="如：房租、物业费"
+          placeholder-class="modal-placeholder"
+          value="{{ formNote }}"
+          bindinput="onFormNoteInput"
+        />
+      </view>
+      <view class="modal-quick text-caption" wx:if="{{ !editingId }}">
+        <text class="modal-quick-link" bindtap="onFillFromRecent">填入最近一笔的金额与说明（月份仍可按需修改）</text>
+      </view>
+      <view class="modal-actions">
+        <view class="glass-btn modal-btn ghost" wx:if="{{ editingId }}" bindtap="onDelete">删除</view>
+        <view class="glass-btn modal-btn" bindtap="onCloseForm">取消</view>
+        <view class="glass-btn modal-btn primary" bindtap="onSave">保存</view>
+      </view>
+    </view>
+  </view>
+</view>

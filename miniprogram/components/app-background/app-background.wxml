@@ -1,0 +1,13 @@
+<!-- 全屏最底层背景：自定义图或默认渐变，磨砂叠层 + 明暗自适应 -->
+<view class="app-bg" aria-hidden="true">
+  <image
+    wx:if="{{ displaySrc }}"
+    class="app-bg__img"
+    src="{{ displaySrc }}"
+    mode="aspectFill"
+    bindload="onImgLoad"
+  />
+  <view wx:else class="app-bg__fallback" />
+  <view class="app-bg__veil app-bg__veil--{{ tone }}" />
+  <canvas type="2d" id="appBgCanvas" class="app-bg__canvas" />
+</view>
