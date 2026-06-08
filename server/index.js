@@ -270,6 +270,27 @@ function readLatestBackupByOpenid(openid) {
   }
 }
 
+/**
+ * 从历史备份中找出「最近一份非空的 studioExpenses」。
+ * 用途：老师端全量备份常带空 studioExpenses（本机不维护工作室支出），
+ *       若直接写入会把老板代填的支出覆盖成空。此处按 mtime 由新到旧扫描，
+ *       返回第一份含非空支出的数组；都为空/缺键则返回 null（交由调用方决定兜底）。
+ */
+function findLatestNonEmptyStudioExpensesByOpenid(openid) {
+  const files = listBackupFilesByOpenid(openid)
+  for (const f of files) {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(f.filepath, 'utf8'))
+      if (Array.isArray(parsed.studioExpenses) && parsed.studioExpenses.length > 0) {
+        return parsed.studioExpenses
+      }
+    } catch {
+      // 跳过损坏文件，继续向更旧的备份回溯
+    }
+  }
+  return null
+}
+
 function readProfileByOpenid(openid, req) {
   const filepath = path.join(PROFILE_DIR, `${openid}.json`)
   if (!fs.existsSync(filepath)) return null
@@ -459,13 +480,24 @@ app.post('/api/backup', (req, res) => {
 
   const userDir = path.join(BACKUP_DIR, verified.openid)
   if (!fs.existsSync(userDir)) fs.mkdirSync(userDir, { recursive: true })
+
+  // studioExpenses 防覆盖：老师端日常全量备份通常带空数组（本机不维护工作室支出），
+  // 而该字段可能由「老板代管」写入。若本次为空，则从历史备份回溯保留最近一份非空支出，
+  // 避免把老板填好的工作室支出覆盖丢失。
+  const incomingExpenses = Array.isArray(studioExpenses) ? studioExpenses : []
+  let resolvedExpenses = incomingExpenses
+  if (incomingExpenses.length === 0) {
+    const preserved = findLatestNonEmptyStudioExpensesByOpenid(verified.openid)
+    if (preserved) resolvedExpenses = preserved
+  }
+
   // 每次备份都写新文件（append-only），方便追溯历史版本
   const payload = {
     openid: verified.openid,
     courses,
     students,
     settings,
-    studioExpenses: Array.isArray(studioExpenses) ? studioExpenses : [],
+    studioExpenses: resolvedExpenses,
     backupAt: new Date().toISOString(),
   }
   const filename = `backup_${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.json`
