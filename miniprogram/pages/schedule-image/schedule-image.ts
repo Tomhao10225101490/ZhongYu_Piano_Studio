@@ -59,6 +59,14 @@ function fmtDate(y: number, m: number, d: number): string {
   return `${y}-${pad2(m)}-${pad2(d)}`
 }
 
+/** 在给定日期上加减天数，返回 YYYY-MM-DD（自动跨月跨年）。解析失败时原样返回 */
+function addDays(dateStr: string, delta: number): string {
+  const p = toDateParts(dateStr)
+  if (!p) return dateStr
+  const dt = new Date(p.y, p.m - 1, p.d + delta)
+  return fmtDate(dt.getFullYear(), dt.getMonth() + 1, dt.getDate())
+}
+
 function getWeekRangeByDate(dateStr: string): [string, string] {
   const p = toDateParts(dateStr)
   if (!p) return getWeekRange()
@@ -92,6 +100,12 @@ Page({
     canvasWidth: CANVAS_WIDTH,
     canvasHeight: 400,
     imagePath: '',
+    /** 是否支持「上一日/下一日」切换（仅当日费用图、当日课表） */
+    canStepDay: false,
+    /** 当前展示的日期 YYYY-MM-DD（用于按日切换） */
+    currentDate: '',
+    /** 按日切换时的重建模式 */
+    stepMode: '' as 'fee' | 'schedule' | '',
   },
 
   onLoad(opt: {
@@ -135,7 +149,19 @@ Page({
       return
     }
 
-    if (type === 'fee-week' || type === 'fee-month' || type === 'fee-day' || type === 'fee-year') {
+    // 当日费用图：支持「上一日/下一日」按日切换
+    if (type === 'fee-day') {
+      const date = (opt?.date || opt?.baseDate || getTodayStr()).trim()
+      wx.setNavigationBarTitle({ title: '当日费用统计图' })
+      this.setData({
+        ...this.buildFeeDayPayload(date),
+        canStepDay: true,
+        stepMode: 'fee',
+      })
+      return
+    }
+
+    if (type === 'fee-week' || type === 'fee-month' || type === 'fee-year') {
       const students = getStudents()
       const settings = getSettings()
       const baseDate = (opt?.baseDate || getTodayStr()).trim()
@@ -144,15 +170,10 @@ Page({
           ? getWeekRangeByDate(baseDate)
           : type === 'fee-month'
             ? getMonthRangeByDate(baseDate)
-            : type === 'fee-year'
-              ? (() => {
-                  const y = Number((opt?.year || baseDate.slice(0, 4) || '').trim())
-                  const yy = Number.isFinite(y) ? y : new Date().getFullYear()
-                  return [`${yy}-01-01`, `${yy}-12-31`] as [string, string]
-                })()
             : (() => {
-                const d = (opt?.date || getTodayStr()).trim()
-                return [d, d] as [string, string]
+                const y = Number((opt?.year || baseDate.slice(0, 4) || '').trim())
+                const yy = Number.isFinite(y) ? y : new Date().getFullYear()
+                return [`${yy}-01-01`, `${yy}-12-31`] as [string, string]
               })()
       const { rows, total, bossTotal, teacherTotal, globalPrice, globalBossSharePercent } = listFeeDetailsInRange(
         range,
@@ -166,9 +187,7 @@ Page({
           ? `当周费用统计 ${formatWeekRange(range)}`
           : type === 'fee-month'
             ? `${y}年${mo}月费用统计（${formatDateShort(range[0])}-${formatDateShort(range[1])}）`
-            : type === 'fee-year'
-              ? `${y}年费用统计（${formatDateShort(range[0])}-${formatDateShort(range[1])}）`
-            : `${formatDateShort(range[0])} 费用统计`
+            : `${y}年费用统计（${formatDateShort(range[0])}-${formatDateShort(range[1])}）`
       const feeSummary = `共${rows.length}节 总¥${total.toFixed(2)} 老板¥${bossTotal.toFixed(2)} 教师¥${teacherTotal.toFixed(2)}`
       const feeRows: FeeCanvasRow[] = rows.map(({ course: c, bossFee, teacherFee, bossSharePercent }) => {
         return {
@@ -191,9 +210,7 @@ Page({
             ? '当周费用统计图'
             : type === 'fee-month'
               ? '当月费用统计图'
-              : type === 'fee-year'
-                ? '年度费用统计图'
-              : '当日费用统计图',
+              : '年度费用统计图',
       })
       this.setData({
         mode: 'fee',
@@ -206,25 +223,22 @@ Page({
       return
     }
 
-    let list: Course[]
-    let title: string
-    let subtitle: string
-
+    // 当日课表：支持「上一日/下一日」按日切换
     if (type === 'day') {
       const date = opt?.date || getTodayStr()
-      list = courses.filter((c) => c.date === date).sort((a, b) => a.startTime.localeCompare(b.startTime))
-      const [yy, mm, dd] = date.split('-').map(Number)
-      title = '钟于钢琴工作室'
-      subtitle = `${yy}年${mm}月${dd}日 课表`
-    } else {
-      const [start, end] = getWeekRange()
-      list = courses
-        .filter((c) => inRange(c.date, [start, end]))
-        .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))
-      title = '钟于钢琴工作室'
-      subtitle = '本周课表 ' + formatWeekRange([start, end])
+      wx.setNavigationBarTitle({ title: '课表图片' })
+      this.setData({
+        ...this.buildScheduleDayPayload(date),
+        canStepDay: true,
+        stepMode: 'schedule',
+      })
+      return
     }
 
+    const [start, end] = getWeekRange()
+    const list = courses
+      .filter((c) => inRange(c.date, [start, end]))
+      .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))
     const canvasHeight = Math.min(
       HEADER_SCHEDULE + Math.max(list.length, 1) * ROW_HEIGHT_SCHEDULE + BOTTOM_PAD,
       1400,
@@ -232,10 +246,89 @@ Page({
     wx.setNavigationBarTitle({ title: '课表图片' })
     this.setData({
       mode: 'schedule',
-      title,
-      subtitle,
+      title: '钟于钢琴工作室',
+      subtitle: '本周课表 ' + formatWeekRange([start, end]),
       courseList: list,
       canvasHeight,
+    })
+  },
+
+  /** 计算「当日费用图」在指定日期的渲染数据（供首屏与按日切换共用，避免逻辑分叉） */
+  buildFeeDayPayload(date: string) {
+    const courses = getCourses()
+    const students = getStudents()
+    const settings = getSettings()
+    const d = (date || getTodayStr()).trim()
+    const range: [string, string] = [d, d]
+    const { rows, total, bossTotal, teacherTotal, globalPrice, globalBossSharePercent } =
+      listFeeDetailsInRange(range, courses, students, settings)
+    const feeSummary = `共${rows.length}节 总¥${total.toFixed(2)} 老板¥${bossTotal.toFixed(2)} 教师¥${teacherTotal.toFixed(2)}`
+    const feeRows: FeeCanvasRow[] = rows.map(({ course: c, bossFee, teacherFee, bossSharePercent }) => ({
+      dateShort: formatDateShort(c.date),
+      timeStr: `${c.startTime}-${minutesToTime(timeToMinutes(c.startTime) + c.duration)}`,
+      name: c.studentName,
+      sharePercentStr: `${bossSharePercent}/${100 - bossSharePercent}`,
+      bossFeeStr: bossFee.toFixed(2),
+      teacherFeeStr: teacherFee.toFixed(2),
+    }))
+    const whiteBottom = PAD + FEE_WHITE_H
+    const tableHeaderTop = whiteBottom + FEE_GAP_AFTER_WHITE
+    const lineY = tableHeaderTop + FEE_TABLE_HEADER_ROW_H
+    const dataRows = Math.max(feeRows.length, 1)
+    const canvasHeight = Math.min(lineY + dataRows * ROW_HEIGHT_FEE + BOTTOM_PAD, MAX_CANVAS_H)
+    return {
+      mode: 'fee' as const,
+      title: '钟于钢琴工作室',
+      subtitle: `${formatDateShort(range[0])} 费用统计（全局老板分成${globalBossSharePercent}% · 基准${globalPrice}元/45分钟）`,
+      feeSummary,
+      feeRows,
+      canvasHeight,
+      currentDate: d,
+    }
+  },
+
+  /** 计算「当日课表」在指定日期的渲染数据（供首屏与按日切换共用） */
+  buildScheduleDayPayload(date: string) {
+    const courses = getCourses()
+    const d = (date || getTodayStr()).trim()
+    const list = courses
+      .filter((c) => c.date === d)
+      .sort((a, b) => a.startTime.localeCompare(b.startTime))
+    const [yy, mm, dd] = d.split('-').map(Number)
+    const canvasHeight = Math.min(
+      HEADER_SCHEDULE + Math.max(list.length, 1) * ROW_HEIGHT_SCHEDULE + BOTTOM_PAD,
+      1400,
+    )
+    return {
+      mode: 'schedule' as const,
+      title: '钟于钢琴工作室',
+      subtitle: `${yy}年${mm}月${dd}日 课表`,
+      courseList: list,
+      canvasHeight,
+      currentDate: d,
+    }
+  },
+
+  onPrevDay() {
+    this.stepDay(-1)
+  },
+
+  onNextDay() {
+    this.stepDay(1)
+  },
+
+  /** 按日切换：重建数据并重绘 Canvas（先清空旧图让 canvas 重新挂载，再在回调里绘制） */
+  stepDay(delta: number) {
+    if (!this.data.canStepDay) return
+    playTouchSound()
+    const cur = this.data.currentDate || getTodayStr()
+    const nextDate = addDays(cur, delta)
+    const payload =
+      this.data.stepMode === 'fee'
+        ? this.buildFeeDayPayload(nextDate)
+        : this.buildScheduleDayPayload(nextDate)
+    this.setData({ ...payload, imagePath: '' }, () => {
+      this.drawCanvas()
     })
   },
 

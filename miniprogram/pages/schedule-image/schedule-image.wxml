@@ -2,9 +2,31 @@
 <view class="page-root">
   <app-background />
   <view class="page-wrap">
-  <view class="title-wrap glass-card">
-    <view class="ios-section-title">{{ title }}</view>
-    <text class="page-subtitle">{{ subtitle }}</text>
+  <view class="title-wrap glass-card {{ canStepDay ? 'title-wrap--nav' : '' }}">
+    <view
+      wx:if="{{ canStepDay }}"
+      class="day-nav-btn day-nav-btn--prev"
+      hover-class="day-nav-btn--active"
+      hover-stay-time="80"
+      bindtap="onPrevDay"
+    >
+      <text class="day-nav-arrow">‹</text>
+      <text class="day-nav-label">上一日</text>
+    </view>
+    <view class="title-center">
+      <view class="ios-section-title">{{ title }}</view>
+      <text class="page-subtitle">{{ subtitle }}</text>
+    </view>
+    <view
+      wx:if="{{ canStepDay }}"
+      class="day-nav-btn day-nav-btn--next"
+      hover-class="day-nav-btn--active"
+      hover-stay-time="80"
+      bindtap="onNextDay"
+    >
+      <text class="day-nav-label">下一日</text>
+      <text class="day-nav-arrow">›</text>
+    </view>
   </view>
 
   <view class="canvas-wrap" wx:if="{{ !imagePath }}" style="width: {{ canvasWidth }}px; height: {{ canvasHeight }}px;">
