@@ -13,9 +13,10 @@
 4. [模块分层与依赖地图](#4-模块分层与依赖地图)
 5. [设计理念与工程取舍](#5-设计理念与工程取舍)
 6. [风险控制与可恢复机制](#6-风险控制与可恢复机制)
-7. [项目演进里程碑与未来路线](#7-项目演进里程碑与未来路线)
-8. [开发与排障导航](#8-开发与排障导航)
-9. [本地开发与发布](#9-本地开发与发布)
+7. [近期功能迭代与实现链路（V7）](#7-近期功能迭代与实现链路v7)
+8. [项目演进里程碑与未来路线](#8-项目演进里程碑与未来路线)
+9. [开发与排障导航](#9-开发与排障导航)
+10. [本地开发与发布](#10-本地开发与发布)
 
 ---
 
@@ -224,7 +225,7 @@ flowchart TD
 
 - `token/authToken` 双字段兼容。
 - `expiresAt=0` 和正数时间戳都可解释。
-- `studioExpenses` 采用缺键兼容语义，避免旧备份被误判。
+- `studioExpenses` 采用缺键兼容语义，避免旧备份被误判；并在写入侧增加**空值防覆盖**（见 7.1），避免老师全量备份把老板代填支出清空。
 - URL 规范化兼容反向代理与历史资源地址。
 
 ### 5.3 权限最小化：老板可治理，不可越权
@@ -265,9 +266,92 @@ flowchart LR
 
 ---
 
-## 7. 项目演进里程碑与未来路线
+## 7. 近期功能迭代与实现链路（V7）
 
-### 7.1 已完成里程碑
+> 本章聚焦最新一轮迭代的**问题背景 → 数据流 → 关键代码**，便于评审快速理解“为什么这样改”。
+
+### 7.1 工作室支出「防覆盖」修复（服务端）
+
+**问题现象**：老板在「查看老师」时填好的工作室支出，过一段时间再进去追加时消失了；年度汇总里的「工作室」支出也随之变空。
+
+**根因**：老板代填走 `POST /api/backup/target-studio-expenses`，当时确实写入了含支出的备份；但老师端日常操作（改课、加学生、打开小程序）会触发 `POST /api/backup` 全量备份，请求体总携带本机 `studioExpenses`（老师本机通常为空 `[]`）。服务端只认每个老师目录下 **mtime 最新** 的备份文件，于是老师那份「空支出」成为最新版，把老板代填的支出覆盖掉。
+
+**修复链路（图 9）**：
+
+```mermaid
+flowchart TD
+  teacherBackup[TeacherFullBackup studioExpenses empty] --> postBackup[/POST api backup/]
+  postBackup --> checkEmpty{"incoming studioExpenses empty?"}
+  checkEmpty -->|no| writeIncoming[WriteIncomingExpenses]
+  checkEmpty -->|yes| scanHistory[findLatestNonEmptyStudioExpensesByOpenid]
+  scanHistory --> preserved{FoundNonEmpty?}
+  preserved -->|yes| writePreserved[PreserveLatestNonEmpty]
+  preserved -->|no| writeEmpty[WriteEmpty]
+```
+
+**关键代码**：
+
+- [`server/index.js`](server/index.js)
+  - `findLatestNonEmptyStudioExpensesByOpenid()`：按 mtime 由新到旧回溯历史备份，取最近一份非空支出。
+  - `POST /api/backup`：写入前若 `studioExpenses` 为空则用回溯结果兜底，而非直接写 `[]`。
+
+**边界**：仅“只增不减”保护；真正清空支出应通过老板代管接口提交。已丢失的历史支出需从旧备份文件手工找回。
+
+### 7.2 课程备注（note）
+
+**需求背景**：临时给家长占位排课时先随便填个时间，正式排课时容易忘记原本约定的时段（如本应下午却排到上午）。希望能加个备注提醒自己。
+
+**实现链路（图 10）**：
+
+```mermaid
+flowchart LR
+  editInput[CourseEditNoteInput] --> saveCourse[doSave]
+  saveCourse --> courseNote[Course.note]
+  courseNote --> localStore[(storage setCourses)]
+  localStore --> cloudBackup[backupCurrentUserToCloud]
+  courseNote --> dayView[DayCardNoteTag]
+```
+
+**关键代码**：
+
+- [`miniprogram/types/index.ts`](miniprogram/types/index.ts)：复用既有 `Course.note` 字段，未改数据结构。
+- [`miniprogram/pages/course-edit/course-edit.ts`](miniprogram/pages/course-edit/course-edit.ts)：新增 `onNoteInput`，`doSave` 在新增/编辑两条分支写入 `note`。
+- [`miniprogram/pages/day/day.wxml`](miniprogram/pages/day/day.wxml)：课程卡片有备注时展示琥珀色「备注」标签。
+
+**安全边界**：备注仅出现在编辑页与日视图；分享课表图（`schedule-image`）不含备注，确保“仅自己可见”，不泄露给家长。
+
+### 7.3 分享图「上一日/下一日」切换 + 星期显示
+
+**需求背景**：在「当日费用统计图」查看某天后，想看前一天/后一天需退回统计页重新选日期，操作繁琐。
+
+**实现链路（图 11）**：
+
+```mermaid
+flowchart TD
+  header[TopCardPrevNextButtons] --> stepDay[stepDay delta]
+  stepDay --> addDays[addDays crossMonthYear]
+  addDays --> rebuild{stepMode}
+  rebuild -->|fee| feePayload[buildFeeDayPayload]
+  rebuild -->|schedule| schedulePayload[buildScheduleDayPayload]
+  feePayload --> redraw[setData then drawCanvas]
+  schedulePayload --> redraw
+```
+
+**关键代码**：
+
+- [`miniprogram/pages/schedule-image/schedule-image.ts`](miniprogram/pages/schedule-image/schedule-image.ts)
+  - `buildFeeDayPayload()` / `buildScheduleDayPayload()`：首屏与切换共用同一套计算，避免逻辑分叉。
+  - `stepDay()` + `addDays()`：按 ±1 天重建并重绘，自动跨月跨年。
+  - `weekdayCn()`：日期后统一显示中文星期（如「6月6日 周五」）。
+- [`miniprogram/pages/schedule-image/schedule-image.wxml`](miniprogram/pages/schedule-image/schedule-image.wxml)：顶部卡片在按日模式改为「‹ 上一日 ｜ 标题 ｜ 下一日 ›」三段式布局。
+
+**一致性**：当日费用图（`fee-day`）与当日课表图（`day`）共用同一组件与逻辑，交互与视觉完全一致；周/月/年费用图、年度汇总图不显示切换按钮，布局保持原样。
+
+---
+
+## 8. 项目演进里程碑与未来路线
+
+### 8.1 已完成里程碑
 
 - V1：本地排课闭环（课程/学生/设置）+ 冲突检测与顺延。
 - V2：登录与云备份（append-only）。
@@ -275,8 +359,9 @@ flowchart LR
 - V4：工作室支出独立治理 + 老板代写目标支出。
 - V5：登录冲突保护（手动二选一）+ 上传前快照回滚。
 - V6：年度汇总、分享增强、时长自定义与按比例计费。
+- V7：支出防覆盖修复 + 课程备注 + 分享图按日切换与星期显示（详见第 7 章）。
 
-### 7.2 未来路线（非破坏式升级）
+### 8.2 未来路线（非破坏式升级）
 
 - **性能**：老板聚合从目录扫描升级索引/分页。
 - **存储**：可平滑引入对象存储与增量同步。
@@ -285,9 +370,9 @@ flowchart LR
 
 ---
 
-## 8. 开发与排障导航
+## 9. 开发与排障导航
 
-### 8.1 关键函数入口
+### 9.1 关键函数入口
 
 - 登录与同步：
   - [`miniprogram/utils/auth.ts`](miniprogram/utils/auth.ts) `loginWithServer()`
@@ -303,7 +388,7 @@ flowchart LR
 - 服务端：
   - [`server/index.js`](server/index.js) `verifyAuthToken()`, `readLatestBackupByOpenid()`
 
-### 8.2 常见排障顺序
+### 9.2 常见排障顺序
 
 1. 老师本地有数据但老板看不到：先查是否有新备份文件落盘。  
 2. 备份失败：检查 token 是否有效，再看 pending 是否被 drain。  
@@ -312,7 +397,7 @@ flowchart LR
 
 ---
 
-## 9. 本地开发与发布
+## 10. 本地开发与发布
 
 1. 用微信开发者工具打开项目，指定 `miniprogram` 为小程序根目录。  
 2. 服务端部署与环境变量见 [`server/README.md`](server/README.md)。  
