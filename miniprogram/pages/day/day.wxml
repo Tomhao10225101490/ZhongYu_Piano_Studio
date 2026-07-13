@@ -14,10 +14,20 @@
     scroll-with-animation="{{ false }}"
   >
     <view class="course-list" wx:if="{{ courses.length > 0 }}">
+      <block wx:for="{{ courses }}" wx:key="id">
+      <view
+        wx:if="{{ item.canPullUp && !swapSourceId }}"
+        class="gap-filler"
+        hover-class="gap-filler--active"
+        hover-stay-time="80"
+        data-id="{{ item.id }}"
+        catchtap="onPullUp"
+      >
+        <text class="gap-filler-icon">↑</text>
+        <text class="gap-filler-text">上调补位 · 空档 {{ item.gapBeforeMinutes }} 分钟</text>
+      </view>
       <view
         class="course-card glass-card {{ swapSourceId === item.id ? 'course-card--swap-selected' : '' }}"
-        wx:for="{{ courses }}"
-        wx:key="id"
         style="border-left-color: {{ item.studentColor || '#A8C5C0' }}"
         data-id="{{ item.id }}"
         bindlongpress="onCardLongPress"
@@ -41,6 +51,7 @@
           <text class="action-btn danger" catchtap="onCancel" data-id="{{ item.id }}">{{ item.isFinished ? '删除' : '取消' }}</text>
         </view>
       </view>
+      </block>
     </view>
     <view class="empty-wrap" wx:else>
       <text class="empty-text">当日暂无课程</text>

@@ -273,6 +273,70 @@ export function insertCourseAndShift(
   return added
 }
 
+/** 上调补位的执行结果 */
+export type PullUpResult =
+  | { moved: false; reason: 'not_found' | 'first' | 'nogap' | 'finished' }
+  | { moved: true; delta: number; affected: number; newStartTime: string }
+
+/**
+ * 【上调补位】将某课程上移，使其开始时间紧贴“前一节课的结束时间”，填补前方空档；
+ * 其后同一天的所有课程整体前移相同分钟数（保留彼此原有间隔），从而把后面的课一并往前顶上。
+ *
+ * 正确性保证：
+ * - 目标课上移后恰好紧贴前一节，二者不重叠；
+ * - 其后课程与目标课一起前移相同 delta，相互间隔保持不变，故原本无重叠则移动后仍无重叠。
+ *
+ * 仅在以下条件下执行（否则返回原因，不修改数据）：
+ * - 存在“前一节课”（非当天第一节）；
+ * - 前方确有空档（delta > 0）；
+ * - 目标课尚未结束（不改写历史）。
+ *
+ * @param courseId 需要上调的课程 ID
+ */
+export function pullUpCourseAndFollowing(courseId: string): PullUpResult {
+  const all = getCourses()
+  const target = all.find((c) => c.id === courseId)
+  if (!target) return { moved: false, reason: 'not_found' }
+
+  const date = target.date
+  const dayCourses = all
+    .filter((c) => c.date === date)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime))
+
+  const idx = dayCourses.findIndex((c) => c.id === courseId)
+  if (idx <= 0) return { moved: false, reason: 'first' }
+  if (isCourseFinished(target.date, target.startTime, target.duration)) {
+    return { moved: false, reason: 'finished' }
+  }
+
+  // 用“前方所有课程的最晚结束时间”作为上调锚点：
+  // 即便存在异常重叠数据，也能保证上调后不与任何在前课程重叠。
+  let prevEnd = 0
+  for (let i = 0; i < idx; i++) {
+    prevEnd = Math.max(prevEnd, timeToMinutes(dayCourses[i].startTime) + dayCourses[i].duration)
+  }
+  const selStart = timeToMinutes(target.startTime)
+  const delta = selStart - prevEnd
+  if (delta <= 0) return { moved: false, reason: 'nogap' }
+
+  // 目标课及其后所有课统一前移 delta；清除顺延锚点，避免残留误导后续恢复逻辑
+  let affected = 0
+  for (let i = idx; i < dayCourses.length; i++) {
+    const c = dayCourses[i]
+    dayCourses[i] = {
+      ...c,
+      startTime: minutesToTime(timeToMinutes(c.startTime) - delta),
+      preShiftStartTime: undefined,
+      shiftedByCourseId: undefined,
+    }
+    affected += 1
+  }
+
+  const other = all.filter((c) => c.date !== date)
+  setCourses([...other, ...dayCourses])
+  return { moved: true, delta, affected, newStartTime: minutesToTime(prevEnd) }
+}
+
 /**
  * 判断两门课可否互换开始时间（同一天、时长相同、且不与第三方课程冲突）
  */

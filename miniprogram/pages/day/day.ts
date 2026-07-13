@@ -10,6 +10,7 @@ import {
   isCourseFinished,
   canSwapCourseTimeSlots,
   swapCourseTimeSlots,
+  pullUpCourseAndFollowing,
 } from '../../utils/schedule'
 import { playTouchSound } from '../../utils/sound'
 import { backupCurrentUserToCloud, drainPendingCloudBackup } from '../../utils/cloud'
@@ -25,7 +26,12 @@ Page({
     date: '',
     dateDisplay: '',
     weekdayText: '',
-    courses: [] as (Course & { endTime: string; isFinished: boolean })[],
+    courses: [] as (Course & {
+      endTime: string
+      isFinished: boolean
+      canPullUp: boolean
+      gapBeforeMinutes: number
+    })[],
     isBoss: false,
     showCancelModal: false,
     cancelTargetId: '' as string,
@@ -93,12 +99,73 @@ Page({
 
   loadDay() {
     const { date } = this.data
-    const list = getCoursesByDate(date).map((c) => ({
-      ...c,
-      endTime: minutesToTime(timeToMinutes(c.startTime) + c.duration),
-      isFinished: isCourseFinished(c.date, c.startTime, c.duration),
-    }))
+    // getCoursesByDate 已按开始时间升序；据此计算“前方空档”，标记可上调补位的课
+    // prevMaxEnd：前方所有课程的最晚结束时间，用于稳健计算空档（兼容异常重叠数据）
+    let prevMaxEnd: number | null = null
+    const list = getCoursesByDate(date).map((c) => {
+      const startMin = timeToMinutes(c.startTime)
+      const endMin = startMin + c.duration
+      const isFinished = isCourseFinished(c.date, c.startTime, c.duration)
+      const gapBeforeMinutes = prevMaxEnd == null ? 0 : startMin - prevMaxEnd
+      // 可上调：存在前一节（非首节）、前方有空档、且本节尚未结束
+      const canPullUp = prevMaxEnd != null && gapBeforeMinutes > 0 && !isFinished
+      prevMaxEnd = prevMaxEnd == null ? endMin : Math.max(prevMaxEnd, endMin)
+      return {
+        ...c,
+        endTime: minutesToTime(endMin),
+        isFinished,
+        canPullUp,
+        gapBeforeMinutes,
+      }
+    })
     this.setData({ courses: list })
+  },
+
+  /** 上调补位：把本节课上移紧贴前一节，其后课程整体前移相同分钟数 */
+  onPullUp(e: WechatMiniprogram.TouchEvent) {
+    if (isBossUser() && !isBossViewingSelf()) {
+      wx.showToast({ title: getBossReadOnlyHint(), icon: 'none' })
+      return
+    }
+    this.clearSwapPick()
+    playTouchSound()
+    const id = e.currentTarget.dataset.id as string
+    if (!id) return
+    const list = this.data.courses
+    const idx = list.findIndex((c) => c.id === id)
+    if (idx <= 0) {
+      wx.showToast({ title: '这是当天第一节，无法上调', icon: 'none' })
+      return
+    }
+    const course = list[idx]
+    let prevMaxEnd = 0
+    for (let i = 0; i < idx; i++) {
+      prevMaxEnd = Math.max(prevMaxEnd, timeToMinutes(list[i].startTime) + list[i].duration)
+    }
+    const delta = timeToMinutes(course.startTime) - prevMaxEnd
+    if (delta <= 0) {
+      wx.showToast({ title: '前面没有空档，无需上调', icon: 'none' })
+      return
+    }
+    const newStart = minutesToTime(prevMaxEnd)
+    const followers = list.length - 1 - idx
+    const followText = followers > 0 ? `，其后 ${followers} 节课一并前移 ${delta} 分钟` : ''
+    wx.showModal({
+      title: '上调补位',
+      content: `将「${course.studentName}」从 ${course.startTime} 上调到 ${newStart}${followText}。`,
+      confirmText: '上调',
+      success: (res) => {
+        if (!res.confirm) return
+        const result = pullUpCourseAndFollowing(id)
+        if (result.moved) {
+          void backupCurrentUserToCloud()
+          wx.showToast({ title: '已上调补位', icon: 'success' })
+          this.loadDay()
+        } else {
+          wx.showToast({ title: '无法上调', icon: 'none' })
+        }
+      },
+    })
   },
 
   /** 退出「待互换」选中态 */

@@ -133,6 +133,37 @@
   word-break: break-all;
 }
 
+/* 空档「上调补位」按钮：出现在两节课之间的空档处，虚线胶囊，蓝色点缀 */
+.gap-filler {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 18rpx;
+  border: 1rpx dashed rgba(0, 122, 255, 0.5);
+  background: rgba(0, 122, 255, 0.06);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.gap-filler--active {
+  opacity: 0.6;
+  transform: scale(0.98);
+}
+
+.gap-filler-icon {
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 1;
+  color: #007aff;
+}
+
+.gap-filler-text {
+  font-size: 24rpx;
+  color: #007aff;
+  letter-spacing: 0.02em;
+}
+
 /* 长按选中后，卡片内指引文案 */
 .swap-inline-hint {
   display: block;
