@@ -67,6 +67,16 @@ function addDays(dateStr: string, delta: number): string {
   return fmtDate(dt.getFullYear(), dt.getMonth() + 1, dt.getDate())
 }
 
+const WEEKDAY_CN = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+/** 返回中文星期（如「周五」）；解析失败时返回空串 */
+function weekdayCn(dateStr: string): string {
+  const p = toDateParts(dateStr)
+  if (!p) return ''
+  const dt = new Date(p.y, p.m - 1, p.d)
+  return WEEKDAY_CN[dt.getDay()] || ''
+}
+
 function getWeekRangeByDate(dateStr: string): [string, string] {
   const p = toDateParts(dateStr)
   if (!p) return getWeekRange()
@@ -279,7 +289,7 @@ Page({
     return {
       mode: 'fee' as const,
       title: '钟于钢琴工作室',
-      subtitle: `${formatDateShort(range[0])} 费用统计（全局老板分成${globalBossSharePercent}% · 基准${globalPrice}元/45分钟）`,
+      subtitle: `${formatDateShort(range[0])} ${weekdayCn(d)} 费用统计（全局老板分成${globalBossSharePercent}% · 基准${globalPrice}元/45分钟）`,
       feeSummary,
       feeRows,
       canvasHeight,
@@ -302,7 +312,7 @@ Page({
     return {
       mode: 'schedule' as const,
       title: '钟于钢琴工作室',
-      subtitle: `${yy}年${mm}月${dd}日 课表`,
+      subtitle: `${yy}年${mm}月${dd}日 ${weekdayCn(d)} 课表`,
       courseList: list,
       canvasHeight,
       currentDate: d,
