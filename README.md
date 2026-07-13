@@ -347,6 +347,39 @@ flowchart TD
 
 **一致性**：当日费用图（`fee-day`）与当日课表图（`day`）共用同一组件与逻辑，交互与视觉完全一致；周/月/年费用图、年度汇总图不显示切换按钮，布局保持原样。
 
+### 7.4 课程「上调补位」（空档一键前移）
+
+**需求背景**：某节课取消删除后会在时间轴留下空档。老师希望把后面的课整体往前顶上，例如把 20:30 开始的下一节课上调到前一节结束的 19:45。
+
+**交互设计**：在存在空档的两节课之间，直接渲染虚线「↑ 上调补位 · 空档 X 分钟」按钮（正好落在空档处）；点击弹确认框（显示原时间→新时间、其后前移几节/几分钟），确认后执行。仅对「非首节、前方有空档、未结束」的课显示；互换选择态下隐藏。
+
+**实现链路（图 12）**：
+
+```mermaid
+flowchart TD
+  gapBtn[GapFillerButton] --> confirm[ConfirmModal]
+  confirm --> pullUp[pullUpCourseAndFollowing]
+  pullUp --> anchor[prevMaxEnd 前方最晚结束]
+  anchor --> delta[delta = selStart - prevMaxEnd]
+  delta --> shiftAll[TargetAndFollowersShiftEarlierByDelta]
+  shiftAll --> clearMark[ClearShiftAnchors]
+  clearMark --> writeBack[setCourses then reload]
+```
+
+**正确性保证**：
+
+- 目标课上移到“前方所有课程的最晚结束时间”，与在前课程严格不重叠；
+- 其后同日课程整体前移相同 `delta`，保留彼此间隔，原本无重叠则移动后仍无重叠；
+- 用“前方最晚结束时间”而非仅上一节作锚点，异常重叠数据下也不引入新重叠；
+- 上移时清除顺延锚点（`preShiftStartTime`/`shiftedByCourseId`），避免残留误导恢复逻辑；
+- 已结束课程不可上调，不改写历史。
+
+**关键代码**：
+
+- [`miniprogram/utils/schedule.ts`](miniprogram/utils/schedule.ts) `pullUpCourseAndFollowing()`
+- [`miniprogram/pages/day/day.ts`](miniprogram/pages/day/day.ts) `loadDay()`（标记空档）、`onPullUp()`（确认与执行）
+- [`miniprogram/pages/day/day.wxml`](miniprogram/pages/day/day.wxml)：空档补位按钮 UI
+
 ---
 
 ## 8. 项目演进里程碑与未来路线
@@ -359,7 +392,7 @@ flowchart TD
 - V4：工作室支出独立治理 + 老板代写目标支出。
 - V5：登录冲突保护（手动二选一）+ 上传前快照回滚。
 - V6：年度汇总、分享增强、时长自定义与按比例计费。
-- V7：支出防覆盖修复 + 课程备注 + 分享图按日切换与星期显示（详见第 7 章）。
+- V7：支出防覆盖修复 + 课程备注 + 分享图按日切换与星期显示 + 课程上调补位（详见第 7 章）。
 
 ### 8.2 未来路线（非破坏式升级）
 
@@ -382,7 +415,7 @@ flowchart TD
   - [`miniprogram/utils/bossSwitch.ts`](miniprogram/utils/bossSwitch.ts) `applyBossTeacherView()`
   - [`miniprogram/pages/boss/boss-cert/boss-cert.ts`](miniprogram/pages/boss/boss-cert/boss-cert.ts) `performExitBossAuth()`
 - 排课与统计：
-  - [`miniprogram/utils/schedule.ts`](miniprogram/utils/schedule.ts) `autoShiftAfterUpdate()`
+  - [`miniprogram/utils/schedule.ts`](miniprogram/utils/schedule.ts) `autoShiftAfterUpdate()`、`pullUpCourseAndFollowing()`
   - [`miniprogram/utils/feeStats.ts`](miniprogram/utils/feeStats.ts) `listFeeDetailsInRange()`
   - [`miniprogram/utils/yearSummaryCompute.ts`](miniprogram/utils/yearSummaryCompute.ts) `computeYearSummaryDisplay()`
 - 服务端：
