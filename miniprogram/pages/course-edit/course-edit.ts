@@ -90,6 +90,8 @@ Page({
       { value: 15, label: '提前15分钟' },
       { value: 30, label: '提前30分钟' },
     ],
+    /** 课程备注：如「下午」「待定」，仅本人可见，不参与排课时间计算 */
+    note: '',
     studentPickerOptions: [] as { id: string; label: string }[],
     studentPickerIndex: 0,
     /** 输入姓名筛选（方式二） */
@@ -142,6 +144,7 @@ Page({
           studentColor: course.studentColor || '',
           reminderMinutes: course.reminderMinutes ?? 0,
           reminderIndex: ri,
+          note: course.note || '',
           orphanStudentName: '',
         }
         if (matched) {
@@ -372,6 +375,10 @@ Page({
     this.setData({ reminderIndex: i, reminderMinutes: REMINDER_OPTIONS[i] })
   },
 
+  onNoteInput(e: WechatMiniprogram.Input) {
+    this.setData({ note: String(e.detail.value || '') })
+  },
+
   onSave() {
     playTouchSound()
     if (isBossUser() && !isBossViewingSelf()) {
@@ -473,6 +480,7 @@ Page({
    */
   doSave(forceShift: boolean, restoreFollowers: boolean) {
     const { id, date, startTime, duration, studentColor, reminderMinutes, isEdit } = this.data
+    const note = String(this.data.note || '').trim()
     const studentName = String(this.data.studentName || '').trim()
     if (!getStudents().some((s) => s.name === studentName)) {
       wx.showToast({ title: '所选学生无效，请重新选择', icon: 'none' })
@@ -492,16 +500,16 @@ Page({
           autoShiftAfterUpdate(id, startTime, duration)
         }
       }
-      // 更新当前课程的学生名、提醒等（顺延已写回 storage）
+      // 更新当前课程的学生名、提醒、备注等（顺延已写回 storage）
       const current = getCourses().map((c) =>
-        c.id === id ? { ...c, startTime, duration, studentName, studentColor: studentColor || c.studentColor, reminderMinutes } : c
+        c.id === id ? { ...c, startTime, duration, studentName, studentColor: studentColor || c.studentColor, reminderMinutes, note: note || undefined } : c
       )
       setCourses(current)
     } else {
       // 新增：插入并可能顺延
       const added = insertCourseAndShift(date, startTime, duration, studentName, studentColor || undefined)
-      if (reminderMinutes > 0) {
-        const list = getCourses().map((c) => (c.id === added.id ? { ...c, reminderMinutes } : c))
+      if (reminderMinutes > 0 || note) {
+        const list = getCourses().map((c) => (c.id === added.id ? { ...c, reminderMinutes, note: note || undefined } : c))
         setCourses(list)
       }
     }

@@ -107,6 +107,24 @@
         <view class="picker-val">{{ reminderOptions[reminderIndex].label }}</view>
       </picker>
     </view>
+    <view class="row row--note">
+      <text class="label">备注</text>
+      <view class="note-block">
+        <!-- 不透明底 + 独立层，规避 glass-card 模糊合成层上原生 input 的渲染异常 -->
+        <view class="note-input-wrap">
+          <input
+            class="note-input"
+            type="text"
+            value="{{ note }}"
+            placeholder="如：下午、待定、试课（仅自己可见）"
+            placeholder-class="student-search-placeholder"
+            maxlength="30"
+            bindinput="onNoteInput"
+          />
+        </view>
+        <text class="note-hint text-caption">给这节课加个小提醒，不影响上课时间</text>
+      </view>
+    </view>
     <view class="row" wx:if="{{ isEdit }}">
       <text class="label">复制到其他日期</text>
       <picker mode="date" start="{{ todayStr }}" bindchange="onCopyToOtherDate">

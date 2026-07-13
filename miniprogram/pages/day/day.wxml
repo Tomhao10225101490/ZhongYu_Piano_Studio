@@ -27,6 +27,10 @@
           <text class="time">{{ item.startTime }} - {{ item.endTime }}</text>
           <text class="name">{{ item.studentName }}</text>
           <text class="meta">{{ item.duration }}分钟</text>
+          <view wx:if="{{ item.note }}" class="course-note">
+            <text class="course-note-label">备注</text>
+            <text class="course-note-text">{{ item.note }}</text>
+          </view>
           <text wx:if="{{ swapSourceId === item.id }}" class="swap-inline-hint">
             请选择与本课交换的课程
             <text class="swap-inline-hint-sub">或者点击插入课程在后方插入课程</text>
